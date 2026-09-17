@@ -1,0 +1,35 @@
+---
+/** Port of theme/404.php */
+import Base from '../layouts/Base.astro';
+import { getGlobals } from '../lib/wp/client';
+
+const globals = await getGlobals();
+const logo = globals.logo;
+---
+
+<Base title="Page not found" bodyClass="error404">
+    <article id="error-404">
+        <section class="relative flex items-center overflow-hidden bg-teal min-h-[26rem] lg:min-h-[36.5rem]">
+            <div class="container relative flex flex-col items-center gap-10 py-14 lg:flex-row lg:justify-between lg:py-24">
+                <div class="lg:max-w-2xl max-lg:text-center">
+                    <p class="mp-hero-rise mp-hero-rise--one mp-hero-rise--y mp-caption font-extrabold pb-2">Oops!</p>
+
+                    <h1 class="mp-hero-rise mp-hero-rise--two mp-hero-rise--y mp-header mp-header--hero mp-header--white font-extrabold">404 Error Page</h1>
+
+                    <p class="mp-hero-rise mp-hero-rise--three mp-hero-rise--y font-sans text-base_lg leading-[1.75] text-white pt-6">The page you are looking for doesn't exist.</p>
+
+                    <!-- the rise animation lives on a wrapper so the transforms stay away from the link's own hover transition -->
+                    <div class="mp-hero-rise mp-hero-rise--three mp-hero-rise--y">
+                        <a href="/" class="inline-block border-2 border-white font-primary text-[20px] leading-7 text-white text-center px-6 py-4 mt-8 transition-colors duration-200 hover:lg:bg-white hover:lg:text-teal">Back to Home Page</a>
+                    </div>
+                </div>
+
+                {logo && (
+                    <div class="mp-hero-media hidden lg:flex items-center justify-center shrink-0 size-[420px] xl:size-[480px] rounded-full bg-white">
+                        <img src={logo.url} alt={globals.site.name} class="w-3/4 h-auto" width={logo.width || undefined} height={logo.height || undefined} />
+                    </div>
+                )}
+            </div>
+        </section>
+    </article>
+</Base>

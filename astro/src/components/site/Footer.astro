@@ -1,0 +1,46 @@
+---
+/**
+ * Landing-page footer over a dark city photo: logo, copyright, legal links (footer-1 menu)
+ * and the disclaimer (Theme Settings > footer_attorney_advertising).
+ */
+import type { WpGlobals } from '../../lib/wp/types';
+import { trailingSlashUrl } from '../../lib/wp/url';
+import RichText from '../ui/RichText.astro';
+import WpImage from '../ui/WpImage.astro';
+
+interface Props {
+    globals: WpGlobals;
+}
+
+const { globals } = Astro.props;
+const { options, logo, site, menus } = globals;
+const footerLogo = options.footer_logo || logo;
+const background = options.footer_background || null;
+const year = new Date().getFullYear();
+---
+
+<footer class="mp-footer">
+    {background && <WpImage image={background} size="full" class="mp-footer__bg" alt="" sizes="100vw" />}
+    <div class="absolute inset-0 bg-surface-dark/70" aria-hidden="true"></div>
+    <div class="mp-footer__inner">
+        <a href="/" class="mp-footer__logo" aria-label={site.name}>
+            {footerLogo ? (
+                <WpImage image={footerLogo} size="medium" class="w-full h-auto brightness-0 invert" alt={footerLogo.alt || site.name} sizes="192px" />
+            ) : (
+                <span class="font-heading font-bold text-2xl text-white whitespace-nowrap">{site.name}</span>
+            )}
+        </a>
+
+        <p class="mp-footer__meta">&copy; {year} {options.footer_tagline || site.name}</p>
+
+        {menus['footer-1'].length > 0 && (
+            <nav class="mp-footer__links" aria-label="Legal">
+                {menus['footer-1'].map((item) => (
+                    <a href={trailingSlashUrl(item.url)} target={item.target || undefined}>{item.title}</a>
+                ))}
+            </nav>
+        )}
+
+        <RichText html={options.footer_attorney_advertising} class="mp-footer__disclaimer" />
+    </div>
+</footer>

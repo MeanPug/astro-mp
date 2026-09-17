@@ -1,0 +1,40 @@
+---
+/** acf/mp-faq — accordion of questions with an optional note box (scripts/accordion.ts). */
+import RichText from '../ui/RichText.astro';
+import { sectionAttrs, type BlockProps } from './_shared';
+
+const { block, reveal } = Astro.props as BlockProps<'acf/mp-faq'>;
+const { heading, note } = block.fields;
+const items = block.fields.items ?? [];
+---
+
+<section {...sectionAttrs(block, reveal)} class="mp-section mp-faq bg-white">
+    <div class="container py-14 lg:py-20">
+        {heading && <h2 class="mp-h2 text-center">{heading}</h2>}
+
+        {items.length > 0 && (
+            <div class="mp-accordion-container mx-auto max-w-3xl pt-10">
+                {items.map((item, i) => (
+                    <div class:list={['mp-accordion', i === 0 ? 'open' : '']}>
+                        <button type="button" class="mp-accordion__trigger" aria-expanded={i === 0 ? 'true' : 'false'}>
+                            <span>{item.question}</span>
+                            <span class="mp-accordion__icon" aria-hidden="true"></span>
+                        </button>
+                        <div class="mp-accordion__body">
+                            <RichText html={item.answer} class="mp-accordion__content" />
+                        </div>
+                    </div>
+                ))}
+            </div>
+        )}
+
+        {note && (
+            <div class="mx-auto mt-10 flex min-h-[174px] w-full max-w-[1216px] flex-col items-center justify-center gap-2 rounded-2xl bg-surface p-8 text-center">
+                <svg class="size-6 text-red" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                    <path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8zm-7 8a7 7 0 0 1 14 0H5zm13.5-9.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM5.5 10.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
+                </svg>
+                <p class="mp-lead !text-base max-w-3xl">{note}</p>
+            </div>
+        )}
+    </div>
+</section>

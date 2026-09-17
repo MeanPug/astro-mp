@@ -1,0 +1,34 @@
+---
+/** acf/mp-hero — headline, copy and CTA beside the lead form, over a dark city photo. */
+import LeadFormCard from '../forms/LeadFormCard.astro';
+import Link from '../ui/Link.astro';
+import RichText from '../ui/RichText.astro';
+import WpImage from '../ui/WpImage.astro';
+import { sectionAttrs, type BlockProps } from './_shared';
+
+const { block, reveal } = Astro.props as BlockProps<'acf/mp-hero'>;
+const { heading, content, cta, background_image: background, form_heading, form_shortcode, form_note } = block.fields;
+---
+
+<section {...sectionAttrs(block, reveal)} class="mp-section mp-hero relative overflow-hidden bg-surface-dark text-white">
+    {background ? (
+        <WpImage image={background} size="full" class="absolute inset-0 size-full object-cover" loading="eager" fetchpriority="high" sizes="100vw" />
+    ) : (
+        <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_#2a3441_0%,_#0b0f14_70%)]"></div>
+    )}
+    <div class="absolute inset-0 bg-black/55"></div>
+
+    <div class="container relative grid grid-cols-1 gap-10 py-14 lg:grid-cols-[minmax(0,677px)_minmax(0,560px)] lg:justify-between lg:items-center lg:gap-12 lg:py-20">
+        <div class="max-w-[677px]">
+            {heading && <h1 class="mp-h1 text-white">{heading}</h1>}
+            <RichText html={content} class="mp-prose mp-prose--light pt-6" />
+            {cta && (
+                <div class="pt-8">
+                    <Link link={cta} class="mp-button mp-button--primary" />
+                </div>
+            )}
+        </div>
+
+        <LeadFormCard heading={form_heading} shortcode={form_shortcode} note={form_note} class="w-full max-w-[560px] lg:justify-self-end" />
+    </div>
+</section>

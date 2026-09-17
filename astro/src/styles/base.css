@@ -1,0 +1,170 @@
+/* Base element styles and the shared semantic classes (mp- prefix) of the landing theme. */
+
+body {
+    @apply bg-white font-body text-base leading-relaxed font-medium text-ink-500 antialiased;
+}
+
+/* ---------- typography ---------- */
+.mp-h1 {
+    @apply font-heading text-h1 uppercase;
+}
+
+.mp-h2 {
+    @apply font-heading text-h2 text-red;
+}
+
+.mp-h3 {
+    @apply font-heading text-h3 text-ink;
+}
+
+.mp-h4 {
+    @apply font-heading text-h4 text-ink;
+}
+
+/* small uppercase label (AWARDS & RECOGNITION, PRACTICE AREA) */
+.mp-label {
+    @apply font-body font-medium text-base uppercase tracking-wide text-red;
+}
+
+.mp-lead {
+    @apply font-body text-lead font-medium text-ink-500;
+}
+
+/* WYSIWYG copy from WordPress */
+.mp-prose {
+    @apply font-body text-lead font-medium text-ink-500;
+
+    p {
+        @apply pb-4 last:pb-0;
+    }
+
+    a {
+        @apply text-red underline underline-offset-4 hover:text-red-dark;
+    }
+
+    strong {
+        @apply font-bold text-ink;
+    }
+
+    ul,
+    ol {
+        @apply pl-6 pb-4 last:pb-0;
+    }
+
+    ul {
+        @apply list-disc;
+    }
+
+    ol {
+        @apply list-decimal;
+    }
+
+    li {
+        @apply pb-1.5 last:pb-0;
+    }
+
+    h2,
+    h3,
+    h4 {
+        @apply font-heading font-bold text-ink pb-3;
+    }
+
+    h2 {
+        @apply text-h2;
+    }
+
+    h3 {
+        @apply text-h3;
+    }
+
+    h4 {
+        @apply text-h4;
+    }
+
+    &--light {
+        @apply text-white;
+
+        a,
+        strong,
+        h2,
+        h3,
+        h4 {
+            @apply text-white;
+        }
+    }
+
+    &--dark {
+        @apply text-ink-700;
+    }
+}
+
+/* ---------- buttons ---------- */
+.mp-button {
+    @apply inline-flex items-center justify-center gap-2 font-body font-medium text-lead leading-none uppercase text-center border-2 border-solid px-6 py-4 transition-colors duration-200 cursor-pointer;
+
+    &--primary {
+        @apply bg-red border-red text-white hover:bg-red-dark hover:border-red-dark;
+    }
+
+    &--white {
+        @apply bg-white border-white text-red hover:bg-red-soft hover:border-red-soft;
+    }
+
+    &--outline-white {
+        @apply bg-transparent border-white text-white hover:bg-white hover:text-red;
+    }
+
+    &--outline {
+        @apply bg-transparent border-red text-red hover:bg-red hover:text-white;
+    }
+
+    &--small {
+        @apply text-sm px-4 py-3;
+    }
+
+    &--block {
+        @apply w-full;
+    }
+}
+
+/* ---------- section helpers ---------- */
+.mp-section {
+    @apply relative;
+}
+
+.mp-section__inner {
+    @apply container py-14 lg:py-20;
+}
+
+/* ---------- scroll reveal (scripts/inviewport.ts) ---------- */
+.mp-reveal [data-inviewport] {
+    @apply opacity-0;
+    transform: translateY(2rem);
+}
+
+.mp-reveal [data-inviewport].is-inviewport {
+    @apply opacity-100;
+    transform: none;
+    transition:
+        opacity 0.7s ease-out,
+        transform 0.7s ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .mp-reveal [data-inviewport] {
+        @apply opacity-100;
+        transform: none;
+        transition: none;
+    }
+}
+
+/* ---------- image placeholder while assets are pending ---------- */
+.mp-placeholder {
+    @apply relative overflow-hidden bg-surface text-ink-400;
+    background-image: repeating-linear-gradient(135deg, rgba(0, 0, 0, 0.04) 0 12px, transparent 12px 24px);
+
+    &::after {
+        content: attr(data-label);
+        @apply absolute inset-0 flex items-center justify-center font-body text-sm uppercase tracking-wide;
+    }
+}

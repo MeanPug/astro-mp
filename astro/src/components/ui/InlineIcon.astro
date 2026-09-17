@@ -1,0 +1,40 @@
+---
+/**
+ * Inlines an SVG so it inherits the surrounding text colour (fill: currentColor via
+ * .mp-inline-icon in styles/base/base.css).
+ *  - `name`: a theme icon from public/images/icons (port of mp_inline_theme_icon)
+ *  - `url`:  an SVG attachment hosted by WordPress, fetched at build time (mp_inline_svg)
+ */
+interface Props {
+    name?: string;
+    url?: string | null;
+    class?: string;
+}
+
+const { name, url, class: className = '' } = Astro.props;
+
+const themeIcons = import.meta.glob('/public/images/icons/*.svg', { query: '?raw', import: 'default', eager: true }) as Record<string, string>;
+
+const remoteCache: Map<string, Promise<string>> = ((globalThis as Record<string, unknown>).__llfSvgCache ??= new Map()) as Map<string, Promise<string>>;
+
+async function fetchSvg(src: string): Promise<string> {
+    if (!remoteCache.has(src)) {
+        remoteCache.set(
+            src,
+            fetch(src)
+                .then((r) => (r.ok && /svg/i.test(r.headers.get('content-type') ?? src) ? r.text() : ''))
+                .catch(() => ''),
+        );
+    }
+    return remoteCache.get(src)!;
+}
+
+let svg = '';
+if (name) {
+    svg = themeIcons[`/public/images/icons/${name}`] ?? '';
+} else if (url && /\.svg(\?|$)/i.test(url)) {
+    svg = await fetchSvg(url);
+}
+---
+
+{svg && <span class:list={['mp-inline-icon', className]} set:html={svg} />}

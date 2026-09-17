@@ -1,0 +1,25 @@
+{
+  "name": "acf/mp-logo-strip",
+  "title": "MP Logo Strip",
+  "description": "Rows of logos with a small label (Awards & Recognition, As Seen On).",
+  "category": "child-theme-blocks",
+  "icon": "awards",
+  "keywords": [
+    "landing",
+    "logo-strip"
+  ],
+  "acf": {
+    "mode": "preview",
+    "renderTemplate": "mp-logo-strip.php"
+  },
+  "example": {
+    "attributes": {
+      "data": {
+        "is_preview": true
+      }
+    }
+  },
+  "supports": {
+    "anchor": true
+  }
+}

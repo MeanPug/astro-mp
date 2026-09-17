@@ -1,0 +1,238 @@
+---
+/**
+ * Renders a Gravity Form from its definition (GET /astro/v1/form/{id}) with the same class
+ * names Gravity Forms prints, so styles/components/forms.css applies unchanged. Submission
+ * is progressive: scripts/gravity-form.ts posts JSON to gf/v2/forms/{id}/submissions and
+ * shows validation errors / the confirmation; without JS the form posts to WordPress.
+ */
+import { PUBLIC_WP_URL } from 'astro:env/client';
+import { findForm } from '../../lib/wp/client';
+import type { GfField } from '../../lib/gf/types';
+import { trailingSlashLinks } from '../../lib/wp/url';
+
+interface Props {
+    id: number;
+    /** Extra classes on the <form>. */
+    class?: string;
+    /** Small print rendered above the submit button (e.g. "100% Secure & Confidential"). */
+    footerNote?: string | null;
+}
+
+const { id, class: className, footerNote } = Astro.props;
+const form = await findForm(id);
+
+const inputName = (field: GfField, inputId?: string) => `input_${(inputId ?? String(field.id)).replace('.', '_')}`;
+const fieldId = (field: GfField, inputId?: string) => `input_${id}_${(inputId ?? String(field.id)).replace('.', '_')}`;
+
+type InputType = 'text' | 'email' | 'tel' | 'url' | 'number' | 'date' | 'hidden';
+const textTypes: Record<string, InputType> = { text: 'text', email: 'email', phone: 'tel', website: 'url', number: 'number', date: 'date', hidden: 'hidden' };
+
+const gridSpan = (field: GfField) => {
+    const span = Number(field.layoutGridColumnSpan);
+    if (span && span < 12) return `md:col-span-${span}`;
+    return '';
+};
+
+const defaultConfirmation = form?.confirmations.find((c) => c.isDefault) ?? form?.confirmations[0];
+const submitUrl = form ? `${PUBLIC_WP_URL.replace(/\/$/, '')}/wp-json/gf/v2/forms/${form.id}/submissions` : '';
+---
+
+{form && (
+    <form
+        id={`gform_${form.id}`}
+        class:list={['mp-gform', className]}
+        method="post"
+        action={submitUrl}
+        data-gravity-form={form.id}
+        data-confirmation-type={defaultConfirmation?.type ?? 'message'}
+        data-confirmation-url={defaultConfirmation?.type === 'page' ? defaultConfirmation.pagePath : defaultConfirmation?.url ?? ''}
+        novalidate
+    >
+        <div class="gform_validation_errors" role="alert" tabindex="-1" hidden></div>
+
+        <div class="gform_body">
+            <div class="gform_fields">
+                {form.fields.map((field) => {
+                    const requiredMark = field.isRequired ? <span class="gfield_required">*</span> : null;
+                    const classes = ['gfield', `gfield--type-${field.type}`, field.cssClass, gridSpan(field), field.isRequired ? 'gfield_contains_required' : ''];
+                    const describedBy = field.description ? `${fieldId(field)}_description` : undefined;
+                    const description = field.description ? <div id={describedBy} class="gfield_description text-sm leading-5 pt-2" set:html={trailingSlashLinks(field.description)} /> : null;
+                    const validation = <div class="validation_message" data-validation-for={field.id} hidden></div>;
+
+                    switch (field.type) {
+                        case 'html':
+                            return <div class:list={['gfield gfield--type-html mp-form__consent', field.cssClass, gridSpan(field)]} set:html={trailingSlashLinks(field.content ?? '')} />;
+
+                        case 'section':
+                            return (
+                                <div class:list={['gfield gfield--type-section', field.cssClass]}>
+                                    <h3 class="gsection_title font-sans font-bold text-base_lg pb-2">{field.label}</h3>
+                                    {description}
+                                </div>
+                            );
+
+                        case 'hidden':
+                            return <input type="hidden" name={inputName(field)} id={fieldId(field)} value={field.defaultValue} />;
+
+                        case 'honeypot':
+                            return null;
+
+                        case 'captcha':
+                            // reCAPTCHA is verified server-side by the Gravity Forms add-on; the widget is not rendered here
+                            return null;
+
+                        case 'textarea':
+                            return (
+                                <div class:list={classes} data-field-id={field.id}>
+                                    <label class="gfield_label" for={fieldId(field)}>
+                                        {field.label} {requiredMark}
+                                    </label>
+                                    <div class="ginput_container ginput_container_textarea">
+                                        <textarea
+                                            name={inputName(field)}
+                                            id={fieldId(field)}
+                                            placeholder={field.placeholder || undefined}
+                                            required={field.isRequired}
+                                            maxlength={field.maxLength ? Number(field.maxLength) : undefined}
+                                            aria-describedby={describedBy}
+                                            rows="5"
+                                        >{field.defaultValue}</textarea>
+                                    </div>
+                                    {description}
+                                    {validation}
+                                </div>
+                            );
+
+                        case 'select':
+                        case 'multiselect':
+                            return (
+                                <div class:list={classes} data-field-id={field.id}>
+                                    <label class="gfield_label" for={fieldId(field)}>
+                                        {field.label} {requiredMark}
+                                    </label>
+                                    <div class="ginput_container ginput_container_select">
+                                        <select name={field.type === 'multiselect' ? `${inputName(field)}[]` : inputName(field)} id={fieldId(field)} required={field.isRequired} multiple={field.type === 'multiselect' || undefined} aria-describedby={describedBy}>
+                                            {field.placeholder && <option value="" selected disabled={field.isRequired}>{field.placeholder}</option>}
+                                            {(field.choices ?? []).map((choice) => (
+                                                <option value={choice.value} selected={choice.isSelected}>
+                                                    {choice.text}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    {description}
+                                    {validation}
+                                </div>
+                            );
+
+                        case 'radio':
+                        case 'checkbox': {
+                            const choices = field.choices ?? [];
+                            return (
+                                <fieldset class:list={classes} data-field-id={field.id}>
+                                    <legend class="gfield_label">
+                                        {field.label} {requiredMark}
+                                    </legend>
+                                    <div class:list={['ginput_container', field.type === 'radio' ? 'gfield_radio' : 'gfield_checkbox']}>
+                                        {choices.map((choice, i) => {
+                                            // GF numbers checkbox inputs id.1, id.2 ... skipping multiples of 10
+                                            const n = i + 1 + Math.floor(i / 9);
+                                            const name = field.type === 'radio' ? inputName(field) : inputName(field, `${field.id}.${n}`);
+                                            const choiceId = `choice_${id}_${field.id}_${n}`;
+                                            return (
+                                                <div class="gchoice">
+                                                    <input type={field.type as 'radio' | 'checkbox'} name={name} id={choiceId} value={choice.value} checked={choice.isSelected} />
+                                                    <label for={choiceId}>{choice.text}</label>
+                                                </div>
+                                            );
+                                        })}
+                                    </div>
+                                    {description}
+                                    {validation}
+                                </fieldset>
+                            );
+                        }
+
+                        case 'consent':
+                            return (
+                                <div class:list={classes} data-field-id={field.id}>
+                                    <span class="gfield_label">
+                                        {field.label} {requiredMark}
+                                    </span>
+                                    <div class="ginput_container ginput_container_consent">
+                                        <input type="checkbox" name={inputName(field, `${field.id}.1`)} id={fieldId(field, `${field.id}.1`)} value="1" required={field.isRequired} />
+                                        <label for={fieldId(field, `${field.id}.1`)} set:html={trailingSlashLinks(field.checkboxLabel ?? field.label)} />
+                                        <input type="hidden" name={inputName(field, `${field.id}.2`)} value={field.checkboxLabel ?? field.label} />
+                                    </div>
+                                    {description}
+                                    {validation}
+                                </div>
+                            );
+
+                        case 'name':
+                        case 'address': {
+                            const inputs = (field.inputs ?? []).filter((input) => !input.isHidden);
+                            return (
+                                <fieldset class:list={classes} data-field-id={field.id}>
+                                    <legend class="gfield_label">
+                                        {field.label} {requiredMark}
+                                    </legend>
+                                    <div class:list={['ginput_container', `ginput_container_${field.type}`, 'grid grid-cols-1 gap-4 md:grid-cols-2']}>
+                                        {inputs.map((input) => (
+                                            <span class="ginput_complex_item">
+                                                <input type="text" name={inputName(field, input.id)} id={fieldId(field, input.id)} placeholder={input.placeholder || undefined} aria-label={input.label} required={field.isRequired && (input.id.endsWith('.3') || input.id.endsWith('.6'))} />
+                                                <label for={fieldId(field, input.id)} class="block text-xxs leading-4 pt-1">{input.label}</label>
+                                            </span>
+                                        ))}
+                                    </div>
+                                    {description}
+                                    {validation}
+                                </fieldset>
+                            );
+                        }
+
+                        default: {
+                            const type: InputType = textTypes[field.inputType] ?? textTypes[field.type] ?? 'text';
+                            return (
+                                <div class:list={classes} data-field-id={field.id}>
+                                    <label class="gfield_label" for={fieldId(field)}>
+                                        {field.label} {requiredMark}
+                                    </label>
+                                    <div class:list={['ginput_container', `ginput_container_${field.type}`]}>
+                                        <input
+                                            type={type}
+                                            name={inputName(field)}
+                                            id={fieldId(field)}
+                                            value={field.defaultValue || undefined}
+                                            placeholder={field.placeholder || undefined}
+                                            required={field.isRequired}
+                                            maxlength={field.maxLength ? Number(field.maxLength) : undefined}
+                                            autocomplete={type === 'email' ? 'email' : type === 'tel' ? 'tel' : undefined}
+                                            aria-describedby={describedBy}
+                                        />
+                                    </div>
+                                    {description}
+                                    {validation}
+                                </div>
+                            );
+                        }
+                    }
+                })}
+            </div>
+        </div>
+
+        {footerNote && <p class="gform_footer_note">{footerNote}</p>}
+
+        <div class="gform_footer">
+            <button type="submit" class="gform_button button" data-submitting-text="Sending…">
+                {form.button.text}
+            </button>
+        </div>
+
+        <div class="gform_confirmation_message mp-typo--raw-content text-base_lg pt-4" role="status" tabindex="-1" hidden></div>
+    </form>
+)}
+
+<script>
+    import '../../scripts/gravity-form';
+</script>

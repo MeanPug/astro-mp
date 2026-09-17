@@ -1,0 +1,97 @@
+---
+/**
+ * Document shell: <head> (fonts, global stylesheet, Yoast meta, analytics), header + nav,
+ * page content, footer, consult modal and the site scripts.
+ */
+import { PUBLIC_CLARITY_ID, PUBLIC_GTM_ID } from 'astro:env/client';
+import { getGlobals } from '../lib/wp/client';
+import type { WpSeo } from '../lib/wp/types';
+import ConsultModal from '../components/site/ConsultModal.astro';
+import Footer from '../components/site/Footer.astro';
+import Header from '../components/site/Header.astro';
+import Seo from '../components/site/Seo.astro';
+import '../styles/global.css';
+
+interface Props {
+    title: string;
+    seo?: WpSeo | null;
+    bodyClass?: string;
+}
+
+const { title, seo = null, bodyClass = '' } = Astro.props;
+const globals = await getGlobals();
+const currentPath = Astro.url.pathname.endsWith('/') ? Astro.url.pathname : `${Astro.url.pathname}/`;
+---
+
+<!doctype html>
+<html lang={globals.site.language?.replace('_', '-') || 'en-US'}>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <meta name="generator" content={Astro.generator} />
+
+        <Seo seo={seo} fallbackTitle={title} siteName={globals.site.name} />
+
+        {PUBLIC_GTM_ID && (
+            <script is:inline define:vars={{ gtmId: PUBLIC_GTM_ID }}>
+                (function (w, d, s, l, i) {
+                    w[l] = w[l] || [];
+                    w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
+                    var f = d.getElementsByTagName(s)[0],
+                        j = d.createElement(s),
+                        dl = l != 'dataLayer' ? '&l=' + l : '';
+                    j.async = true;
+                    j.src = 'https://www.googletagmanager.com/gtm.js?id=' + i + dl;
+                    f.parentNode.insertBefore(j, f);
+                })(window, document, 'script', 'dataLayer', gtmId);
+            </script>
+        )}
+
+        {PUBLIC_CLARITY_ID && (
+            <script is:inline define:vars={{ clarityId: PUBLIC_CLARITY_ID }}>
+                (function (c, l, a, r, i, t, y) {
+                    c[a] =
+                        c[a] ||
+                        function () {
+                            (c[a].q = c[a].q || []).push(arguments);
+                        };
+                    t = l.createElement(r);
+                    t.async = 1;
+                    t.src = 'https://www.clarity.ms/tag/' + i;
+                    y = l.getElementsByTagName(r)[0];
+                    y.parentNode.insertBefore(t, y);
+                })(window, document, 'clarity', 'script', clarityId);
+            </script>
+        )}
+    </head>
+
+    <body class:list={['overflow-x-clip', bodyClass]}>
+        {PUBLIC_GTM_ID && (
+            <noscript>
+                <iframe src={`https://www.googletagmanager.com/ns.html?id=${PUBLIC_GTM_ID}`} height="0" width="0" style="display:none;visibility:hidden"></iframe>
+            </noscript>
+        )}
+
+        <Header globals={globals} currentPath={currentPath} />
+
+        <div id="page" class="site">
+            <div id="content" class="site-content">
+                <main id="main" class="site-main">
+                    <slot />
+                </main>
+            </div>
+        </div>
+
+        <Footer globals={globals} />
+
+        <ConsultModal globals={globals} />
+
+        <script>
+            import '../scripts/site';
+            import '../scripts/inviewport';
+            import '../scripts/accordion';
+            import '../scripts/carousel';
+        </script>
+    </body>
+</html>

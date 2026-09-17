@@ -1,0 +1,32 @@
+---
+/** acf/mp-image-content — photo beside heading, copy and an optional CTA. */
+import Link from '../ui/Link.astro';
+import Placeholder from '../ui/Placeholder.astro';
+import RichText from '../ui/RichText.astro';
+import { sectionAttrs, styleOf, type BlockProps } from './_shared';
+
+const { block, reveal } = Astro.props as BlockProps<'acf/mp-image-content'>;
+const { image, heading, content, cta, styles } = block.fields;
+const imageRight = styleOf(styles, 'layout', 'image_left') === 'image_right';
+const background = styleOf(styles, 'background', 'white');
+---
+
+<section {...sectionAttrs(block, reveal)} class:list={['mp-section mp-image-content', background === 'gray' ? 'bg-surface' : 'bg-white']}>
+    <div class="grid grid-cols-1 lg:grid-cols-2">
+        <div class:list={['relative min-h-[280px] lg:min-h-[480px]', imageRight ? 'lg:order-2' : '']}>
+            <Placeholder image={image} label="Photo" class="absolute inset-0 size-full" imageClass="object-cover" sizes="(min-width: 1024px) 50vw, 100vw" />
+        </div>
+
+        <div class:list={['flex items-center px-5 py-12 lg:px-16 lg:py-20', imageRight ? 'lg:justify-end' : '']}>
+            <div class="w-full max-w-[560px]">
+                {heading && <h2 class="mp-h2">{heading}</h2>}
+                <RichText html={content} class="mp-prose pt-6 [&_ul]:list-disc [&_ul]:marker:text-ink-500" />
+                {cta && (
+                    <div class="pt-8">
+                        <Link link={cta} class="mp-button mp-button--primary" />
+                    </div>
+                )}
+            </div>
+        </div>
+    </div>
+</section>

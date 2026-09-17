@@ -1,0 +1,134 @@
+/*
+ * Lead form (GravityForm.astro output). Same class names Gravity Forms prints, styled to the
+ * Figma "_Input field base" component: 8px radius, 1px #D5D7DA border, xs shadow, 14px labels.
+ */
+.mp-form {
+    [hidden] {
+        @apply !hidden;
+    }
+
+    .gform_required_legend {
+        @apply hidden;
+    }
+
+    .gform_fields {
+        @apply grid grid-cols-1 gap-5 md:grid-cols-12;
+    }
+
+    .gfield {
+        @apply md:col-span-12;
+
+        &--width-half {
+            @apply md:col-span-6;
+        }
+
+        .gfield_label {
+            @apply block font-body font-medium text-sm leading-5 text-label pb-1.5;
+
+            .gfield_required {
+                @apply text-red pl-0.5;
+            }
+        }
+
+        input[type='text'],
+        input[type='tel'],
+        input[type='email'],
+        input[type='url'],
+        input[type='number'],
+        input[type='date'],
+        select,
+        textarea {
+            @apply block w-full bg-white border border-line rounded-input shadow-xs font-body font-normal text-base leading-6 text-ink px-4 py-3;
+
+            &::placeholder {
+                @apply text-ink-400;
+            }
+
+            &:focus {
+                @apply outline-none border-red ring-4 ring-red/10;
+            }
+
+            &[aria-invalid='true'] {
+                @apply border-red;
+            }
+        }
+
+        select {
+            @apply appearance-none bg-no-repeat pr-10;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 20 20' fill='none'%3E%3Cpath d='M5 7.5l5 5 5-5' stroke='%23414651' stroke-width='1.67' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+            background-position: right 14px center;
+
+            &:invalid,
+            option[value=''] {
+                @apply text-ink-400;
+            }
+        }
+
+        textarea {
+            @apply h-[128px] resize-none;
+        }
+
+        .gfield_description {
+            @apply font-body text-sm leading-5 text-ink-500 pt-1.5;
+        }
+
+        .validation_message {
+            @apply block font-body text-sm leading-5 text-red pt-1.5;
+        }
+    }
+
+    .gfield--type-consent .ginput_container_consent,
+    .gfield--type-checkbox .gchoice,
+    .gfield--type-radio .gchoice {
+        @apply flex items-start gap-2;
+
+        input {
+            @apply mt-1 size-4 shrink-0 accent-red;
+        }
+
+        label {
+            @apply font-body text-sm leading-5 text-ink-500;
+        }
+    }
+
+    .gfield--type-html {
+        @apply font-body text-sm leading-5 text-ink-500;
+
+        a {
+            @apply text-red underline;
+        }
+    }
+
+    .gform_validation_errors {
+        @apply block bg-red-soft text-red-deep font-body text-sm leading-5 rounded-input px-4 py-3 mb-5;
+    }
+
+    .gform_footer_note {
+        @apply font-body text-sm leading-5 text-ink-500 pt-5;
+    }
+
+    .gform_footer {
+        @apply pt-5;
+
+        .gform_button {
+            @apply mp-button mp-button--primary;
+
+            &:disabled {
+                @apply opacity-60 cursor-wait;
+            }
+        }
+    }
+
+    .gform_confirmation_message {
+        @apply font-body text-lead text-ink;
+    }
+}
+
+/* the white card the lead form sits in (hero, closing CTA) */
+.mp-form-card {
+    @apply bg-white shadow-form px-6 py-7 md:px-8 md:py-8;
+}
+
+.mp-form-card__heading {
+    @apply font-heading font-bold text-h3 text-ink pb-6;
+}

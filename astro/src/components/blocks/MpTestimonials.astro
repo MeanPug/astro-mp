@@ -1,0 +1,50 @@
+---
+/** acf/mp-testimonials — quote-mark header rule and a carousel of review cards. */
+import Carousel from '../ui/Carousel.astro';
+import WpImage from '../ui/WpImage.astro';
+import { sectionAttrs, type BlockProps } from './_shared';
+
+const { block, reveal } = Astro.props as BlockProps<'acf/mp-testimonials'>;
+const { heading } = block.fields;
+const items = block.fields.items ?? [];
+---
+
+<section {...sectionAttrs(block, reveal)} class="mp-section mp-testimonials bg-surface">
+    {heading && (
+        <div class="border-b-2 border-red bg-white">
+            <div class="container flex items-center gap-6 pt-6 lg:gap-8">
+                <svg class="h-14 w-20 shrink-0 text-red lg:h-16 lg:w-24" viewBox="0 0 96 64" fill="currentColor" aria-hidden="true">
+                    <path d="M28 0h20L28 64H8L28 0zm48 0h20L76 64H56L76 0z" />
+                </svg>
+                <h2 class="font-heading font-bold text-xl leading-7 text-ink pb-4 lg:text-2xl lg:leading-8">{heading}</h2>
+            </div>
+        </div>
+    )}
+
+    {items.length > 0 && (
+        <div class="container py-10 lg:py-14">
+            <Carousel label="Client reviews">
+                {items.map((item) => (
+                    <li class="mp-carousel__slide">
+                        <article class="flex h-full flex-col bg-white p-6 shadow-xs">
+                            {item.practice_area && <p class="mp-label !text-xs">{item.practice_area}</p>}
+                            {item.title && <h3 class="font-heading font-semibold text-lg leading-6 text-ink pt-3">{item.title}</h3>}
+                            {item.content && <p class="font-body text-sm leading-5 text-ink-500 pt-3">{item.content}</p>}
+                            <footer class="mt-auto flex items-center gap-3 pt-6">
+                                {item.author_image ? (
+                                    <WpImage image={item.author_image} size="thumbnail" class="size-9 rounded-full object-cover" sizes="36px" />
+                                ) : (
+                                    <span class="size-9 rounded-full bg-surface" aria-hidden="true"></span>
+                                )}
+                                <div>
+                                    {item.author_name && <p class="font-body font-semibold text-xs leading-4 text-ink">{item.author_name}</p>}
+                                    {item.date && <p class="font-body text-xs leading-4 text-ink-400">{item.date}</p>}
+                                </div>
+                            </footer>
+                        </article>
+                    </li>
+                ))}
+            </Carousel>
+        </div>
+    )}
+</section>

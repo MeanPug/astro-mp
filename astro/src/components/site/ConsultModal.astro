@@ -1,0 +1,33 @@
+---
+/**
+ * Lead form popup (MicroModal) opened by [data-micromodal-trigger="modal-consult"], e.g. the
+ * "Request a free consultation" button of the closing CTA when it links to #consult.
+ * Content from Theme Settings > Modal Form.
+ */
+import type { WpGlobals } from '../../lib/wp/types';
+import { gravityFormIdFromShortcode } from '../../lib/wp/url';
+import GravityForm from '../forms/GravityForm.astro';
+
+interface Props {
+    globals: WpGlobals;
+}
+
+const { globals } = Astro.props;
+const modal = globals.options.global_modal_form ?? {};
+const formId = gravityFormIdFromShortcode(modal.form_shortcode);
+---
+
+{formId && (
+    <div class="modal mp-modal" id="modal-consult" aria-hidden="true">
+        <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+            <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="modal-consult-title">
+                <button type="button" class="mp-modal__close" aria-label="Close" data-micromodal-close></button>
+                {modal.caption && <h2 id="modal-consult-title" class="mp-h3 pb-2">{modal.caption}</h2>}
+                {modal.content && <p class="mp-lead pb-6">{modal.content}</p>}
+                <div class="mp-form">
+                    <GravityForm id={formId} />
+                </div>
+            </div>
+        </div>
+    </div>
+)}

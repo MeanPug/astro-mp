@@ -1,0 +1,25 @@
+{
+  "name": "acf/mp-map-locations",
+  "title": "MP Map Locations",
+  "description": "Service-area map with a highlighted heading and the list of locations.",
+  "category": "child-theme-blocks",
+  "icon": "location-alt",
+  "keywords": [
+    "landing",
+    "map-locations"
+  ],
+  "acf": {
+    "mode": "preview",
+    "renderTemplate": "mp-map-locations.php"
+  },
+  "example": {
+    "attributes": {
+      "data": {
+        "is_preview": true
+      }
+    }
+  },
+  "supports": {
+    "anchor": true
+  }
+}

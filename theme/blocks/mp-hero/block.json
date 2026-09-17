@@ -1,0 +1,25 @@
+{
+  "name": "acf/mp-hero",
+  "title": "MP Landing Hero",
+  "description": "Landing hero: headline, copy, CTA and the lead form over a background photo.",
+  "category": "child-theme-blocks",
+  "icon": "cover-image",
+  "keywords": [
+    "landing",
+    "hero"
+  ],
+  "acf": {
+    "mode": "preview",
+    "renderTemplate": "mp-hero.php"
+  },
+  "example": {
+    "attributes": {
+      "data": {
+        "is_preview": true
+      }
+    }
+  },
+  "supports": {
+    "anchor": true
+  }
+}

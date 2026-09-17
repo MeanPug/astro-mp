@@ -1,0 +1,25 @@
+{
+  "name": "acf/mp-results",
+  "title": "MP Results",
+  "description": "Big recovered amount with a carousel of case results.",
+  "category": "child-theme-blocks",
+  "icon": "chart-line",
+  "keywords": [
+    "landing",
+    "results"
+  ],
+  "acf": {
+    "mode": "preview",
+    "renderTemplate": "mp-results.php"
+  },
+  "example": {
+    "attributes": {
+      "data": {
+        "is_preview": true
+      }
+    }
+  },
+  "supports": {
+    "anchor": true
+  }
+}

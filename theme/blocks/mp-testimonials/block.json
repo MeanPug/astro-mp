@@ -1,0 +1,25 @@
+{
+  "name": "acf/mp-testimonials",
+  "title": "MP Testimonials",
+  "description": "Client reviews carousel.",
+  "category": "child-theme-blocks",
+  "icon": "format-quote",
+  "keywords": [
+    "landing",
+    "testimonials"
+  ],
+  "acf": {
+    "mode": "preview",
+    "renderTemplate": "mp-testimonials.php"
+  },
+  "example": {
+    "attributes": {
+      "data": {
+        "is_preview": true
+      }
+    }
+  },
+  "supports": {
+    "anchor": true
+  }
+}

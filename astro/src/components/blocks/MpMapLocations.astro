@@ -1,0 +1,30 @@
+---
+/** acf/mp-map-locations — service-area map beside a red heading box and the list of locations. */
+import Placeholder from '../ui/Placeholder.astro';
+import RichText from '../ui/RichText.astro';
+import { sectionAttrs, type BlockProps } from './_shared';
+
+const { block, reveal } = Astro.props as BlockProps<'acf/mp-map-locations'>;
+const { image, heading, content, footnote } = block.fields;
+---
+
+<section {...sectionAttrs(block, reveal)} class="mp-section mp-map-locations bg-surface">
+    <!-- Figma: 560px map beside a 720px content column, no gutter between them -->
+    <div class="container grid grid-cols-1 items-center gap-10 py-14 lg:grid-cols-[minmax(0,560px)_minmax(0,720px)] lg:justify-center lg:gap-0 lg:py-20">
+        <div class="mx-auto w-full max-w-[560px]">
+            <Placeholder image={image} label="Service area map" class="w-full aspect-[560/530]" imageClass="h-full w-full object-contain" sizes="(min-width: 1024px) 560px, 100vw" />
+        </div>
+
+        <div class="shadow-card">
+            {heading && (
+                <div class="bg-red px-8 py-8 lg:px-12 lg:py-10">
+                    <h2 class="font-heading text-h2 text-white">{heading}</h2>
+                </div>
+            )}
+            <div class="bg-white px-8 py-8 lg:px-12 lg:py-10">
+                <RichText html={content} class="mp-prose [&_li]:font-bold [&_li]:text-red [&_ul]:list-disc [&_ul]:marker:text-red" />
+                {footnote && <p class="mp-lead pt-4">{footnote}</p>}
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,37 @@
+---
+/**
+ * Every WordPress page becomes a static route. The path list comes from
+ * GET /astro/v1/routes; each page's block list from GET /astro/v1/page.
+ * Posts, team and testimonials get their own templates later (see docs plan, phase D).
+ */
+import BlockRenderer from '../components/BlockRenderer.astro';
+import Base from '../layouts/Base.astro';
+import { getPageByPath, getRoutes } from '../lib/wp/client';
+import type { WpPage } from '../lib/wp/types';
+
+export async function getStaticPaths() {
+    const { routes } = await getRoutes();
+
+    return routes
+        .filter((route) => route.type === 'page')
+        .map((route) => ({
+            params: { slug: route.path === '/' ? undefined : route.path.replace(/^\/|\/$/g, '') },
+            props: { path: route.path },
+        }));
+}
+
+interface Props {
+    path: string;
+}
+
+const { path } = Astro.props;
+const page: WpPage = await getPageByPath(path);
+---
+
+<Base title={page.title} seo={page.seo} bodyClass={`page page-id-${page.id} ${page.slug ? `page-${page.slug}` : ''}`}>
+    <article id={`post-${page.id}`} class={`post-${page.id} page type-page`}>
+        <div class="entry-content">
+            <BlockRenderer blocks={page.blocks} />
+        </div>
+    </article>
+</Base>

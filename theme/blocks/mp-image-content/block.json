@@ -1,0 +1,25 @@
+{
+  "name": "acf/mp-image-content",
+  "title": "MP Image Content",
+  "description": "Photo beside a heading, copy (lists allowed) and an optional CTA.",
+  "category": "child-theme-blocks",
+  "icon": "align-pull-left",
+  "keywords": [
+    "landing",
+    "image-content"
+  ],
+  "acf": {
+    "mode": "preview",
+    "renderTemplate": "mp-image-content.php"
+  },
+  "example": {
+    "attributes": {
+      "data": {
+        "is_preview": true
+      }
+    }
+  },
+  "supports": {
+    "anchor": true
+  }
+}

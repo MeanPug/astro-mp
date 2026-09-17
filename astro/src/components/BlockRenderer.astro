@@ -1,0 +1,57 @@
+---
+/**
+ * Renders the ordered block list of a WordPress post. One component per acf/<slug>, same
+ * names as theme/blocks/<slug>. Unknown blocks leave an HTML comment in dev builds only.
+ */
+import type { WpBlock } from '../lib/wp/types';
+import { isAcfBlock } from '../lib/wp/types';
+import MpCtaForm from './blocks/MpCtaForm.astro';
+import MpFaq from './blocks/MpFaq.astro';
+import MpFeatures from './blocks/MpFeatures.astro';
+import MpHero from './blocks/MpHero.astro';
+import MpImageContent from './blocks/MpImageContent.astro';
+import MpLogoStrip from './blocks/MpLogoStrip.astro';
+import MpMapLocations from './blocks/MpMapLocations.astro';
+import MpPracticeAreas from './blocks/MpPracticeAreas.astro';
+import MpResults from './blocks/MpResults.astro';
+import MpTestimonials from './blocks/MpTestimonials.astro';
+
+interface Props {
+    blocks: WpBlock[];
+}
+
+const { blocks } = Astro.props;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const components: Record<string, any> = {
+    'acf/mp-cta-form': MpCtaForm,
+    'acf/mp-faq': MpFaq,
+    'acf/mp-features': MpFeatures,
+    'acf/mp-hero': MpHero,
+    'acf/mp-image-content': MpImageContent,
+    'acf/mp-logo-strip': MpLogoStrip,
+    'acf/mp-map-locations': MpMapLocations,
+    'acf/mp-practice-areas': MpPracticeAreas,
+    'acf/mp-results': MpResults,
+    'acf/mp-testimonials': MpTestimonials,
+};
+
+/** Every block below the fold takes part in the scroll reveal; the hero is on screen already. */
+const takesPartInReveal = (block: WpBlock) => isAcfBlock(block) && block.name !== 'acf/mp-hero';
+
+const unknown = blocks.filter((b) => isAcfBlock(b) && !components[b.name]).map((b) => b.name);
+if (unknown.length && import.meta.env.DEV) {
+    console.warn(`[BlockRenderer] no component for: ${[...new Set(unknown)].join(', ')}`);
+}
+---
+
+{blocks.map((block) => {
+    if (!isAcfBlock(block)) {
+        return <div class="mp-block-html container py-6" id={block.anchor ?? undefined} set:html={block.html} />;
+    }
+    const Component = components[block.name];
+    if (!Component) {
+        return import.meta.env.DEV ? <Fragment set:html={`<!-- TODO block ${block.name} -->`} /> : null;
+    }
+    return <Component block={block} reveal={takesPartInReveal(block)} />;
+})}

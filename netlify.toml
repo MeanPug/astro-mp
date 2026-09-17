@@ -1,0 +1,27 @@
+# Netlify build for the Astro front-end (the app lives in astro/, WordPress stays on WP Engine).
+# Site settings > Environment variables must define:
+#   WP_API_URL      https://<wpengine-install>.wpengine.com   (build reads content from here)
+#   PUBLIC_WP_URL   same as WP_API_URL                        (browser posts Gravity Forms here)
+#   SITE_URL        https://<site>.netlify.app or the custom domain (canonical/og URLs)
+# Without SITE_URL the build falls back to Netlify's URL / DEPLOY_PRIME_URL.
+
+[build]
+  base    = "astro"
+  command = "npm run gen:types && npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+  # gen:types reads ../theme/acf-json relative to the astro/ base by default
+
+# Astro writes /path/index.html; Netlify serves it for /path/ (pretty URLs) and 404.html for misses.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+  for = "/_astro/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

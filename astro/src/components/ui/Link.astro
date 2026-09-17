@@ -1,0 +1,28 @@
+---
+/**
+ * Port of mp_acf_link(): renders an ACF link field as <a>. Nothing is rendered when the
+ * field is empty or has no URL. Internal URLs get a trailing slash (see lib/wp/url.ts).
+ */
+import type { AcfLink } from '../../lib/wp/acf';
+import { trailingSlashUrl } from '../../lib/wp/url';
+
+interface Props {
+    link: AcfLink | null | undefined | '';
+    /** Replaces the link field's own title (e.g. `${title} >`). */
+    title?: string;
+    target?: string;
+    class?: string;
+    [attr: string]: unknown;
+}
+
+const { link, title, target, class: className, ...rest } = Astro.props;
+const href = link && typeof link === 'object' ? trailingSlashUrl(link.url) : '';
+const resolvedTarget = target || (link && typeof link === 'object' && link.target) || '_self';
+const label = title ?? (link && typeof link === 'object' ? link.title : '');
+---
+
+{href && (
+    <a href={href} class={className} target={resolvedTarget} rel={resolvedTarget === '_blank' ? 'noopener' : undefined} {...rest}>
+        {label}
+    </a>
+)}

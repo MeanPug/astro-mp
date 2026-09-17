@@ -1,0 +1,25 @@
+{
+  "name": "acf/mp-practice-areas",
+  "title": "MP Practice Areas",
+  "description": "Grid of practice-area cards with icons.",
+  "category": "child-theme-blocks",
+  "icon": "grid-view",
+  "keywords": [
+    "landing",
+    "practice-areas"
+  ],
+  "acf": {
+    "mode": "preview",
+    "renderTemplate": "mp-practice-areas.php"
+  },
+  "example": {
+    "attributes": {
+      "data": {
+        "is_preview": true
+      }
+    }
+  },
+  "supports": {
+    "anchor": true
+  }
+}

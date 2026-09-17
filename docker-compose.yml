@@ -1,0 +1,61 @@
+version: '3.7'
+
+services:
+   db:
+     image: mysql:5.7
+     platform: linux/amd64
+     volumes:
+       - db_data:/var/lib/mysql
+     restart: always
+     ports:
+       - "3306:3306"
+     environment:
+       MYSQL_ROOT_PASSWORD: somewordpress
+       MYSQL_DATABASE: wordpress
+       MYSQL_USER: wordpress
+       MYSQL_PASSWORD: wordpress
+
+   wordpress:
+     depends_on:
+       - db
+     build:
+       dockerfile: docker/wordpress/Dockerfile
+       context: .
+     volumes:
+       - wp_plugins:/var/www/html/wp-content/plugins
+       - ./theme:/var/www/html/wp-content/themes/astro-mp-theme
+       - ./uploads:/var/www/html/wp-content/uploads
+       - ./server_config.ini:/usr/local/etc/php/conf.d/server_config.ini
+       - ./wp:/var/www/html
+     ports:
+       - "8000:80"
+     restart: always
+     environment:
+       WORDPRESS_DB_HOST: db:3306
+       WORDPRESS_DB_USER: wordpress
+       WORDPRESS_DB_PASSWORD: wordpress
+       WP_DEBUG: true
+       WP_ENVIRONMENT_TYPE: development
+
+   astro:
+     image: node:22
+     working_dir: /app
+     # .astro/dev.json is the dev-server lock; a container restart would leave it behind
+     command: sh -c "rm -f .astro/dev.json && npm install && npm run gen:types && npm run dev"
+     volumes:
+       - ./astro:/app
+       - ./theme/acf-json:/theme/acf-json:ro
+       - astro_node_modules:/app/node_modules
+     ports:
+       - "4321:4321"
+     environment:
+       WP_API_URL: http://wordpress
+       PUBLIC_WP_URL: http://localhost:8000
+       SITE_URL: http://localhost:4321
+       ACF_JSON_DIR: /theme/acf-json
+     depends_on:
+       - wordpress
+volumes:
+    db_data:
+    wp_plugins:
+    astro_node_modules:

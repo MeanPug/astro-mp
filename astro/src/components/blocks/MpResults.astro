@@ -1,0 +1,37 @@
+---
+/** acf/mp-results — the big recovered amount and a carousel of case results. */
+import Carousel from '../ui/Carousel.astro';
+import { sectionAttrs, type BlockProps } from './_shared';
+
+const { block, reveal } = Astro.props as BlockProps<'acf/mp-results'>;
+const { big_text: bigText, heading, subheading } = block.fields;
+const items = block.fields.items ?? [];
+---
+
+<section {...sectionAttrs(block, reveal)} class="mp-section mp-results bg-surface">
+    <div class="container py-14 text-center lg:py-20">
+        {bigText && (
+            <p class="font-heading text-display uppercase bg-gradient-to-b from-red from-40% to-red/0 bg-clip-text text-transparent leading-none select-none" aria-label={bigText}>
+                {bigText}
+            </p>
+        )}
+
+        {heading && <h2 class="mp-h2 mx-auto max-w-2xl pt-10">{heading}</h2>}
+        {subheading && <p class="mp-lead pt-4">{subheading}</p>}
+
+        {items.length > 0 && (
+            <Carousel class="pt-10 text-left" label="Case results">
+                {items.map((item) => (
+                    <li class="mp-carousel__slide">
+                        <article class="flex h-full flex-col items-center bg-white px-8 py-10 text-center shadow-xs">
+                            {item.amount && <p class="font-body font-light text-[44px] leading-none text-red lg:text-[56px]">{item.amount}</p>}
+                            <span class="mt-6 block h-0.5 w-12 bg-red" aria-hidden="true"></span>
+                            {item.type && <p class="mp-label pt-5 !normal-case !text-sm">{item.type}</p>}
+                            {item.description && <p class="mp-lead pt-4 !text-base">{item.description}</p>}
+                        </article>
+                    </li>
+                ))}
+            </Carousel>
+        )}
+    </div>
+</section>

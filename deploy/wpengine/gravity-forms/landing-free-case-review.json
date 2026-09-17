@@ -1,0 +1,190 @@
+{
+    "version": "3.1.1",
+    "0": {
+        "title": "Landing: Free Case Review",
+        "description": "",
+        "labelPlacement": "top_label",
+        "descriptionPlacement": "below",
+        "button": {
+            "type": "text",
+            "text": "Submit Form"
+        },
+        "fields": [
+            {
+                "is_payment": false,
+                "duplicatable": true,
+                "noURLs": false,
+                "repeatable": true,
+                "type": "text",
+                "id": 1,
+                "label": "First name",
+                "placeholder": "First name",
+                "isRequired": true,
+                "layoutGridColumnSpan": 6,
+                "cssClass": "gfield--width-half",
+                "visibility": "visible",
+                "formId": 7,
+                "pageNumber": 1,
+                "fields": ""
+            },
+            {
+                "is_payment": false,
+                "duplicatable": true,
+                "noURLs": false,
+                "repeatable": true,
+                "type": "text",
+                "id": 2,
+                "label": "Last name",
+                "placeholder": "Last name",
+                "isRequired": true,
+                "layoutGridColumnSpan": 6,
+                "cssClass": "gfield--width-half",
+                "visibility": "visible",
+                "formId": 7,
+                "pageNumber": 1,
+                "fields": ""
+            },
+            {
+                "is_payment": false,
+                "duplicatable": true,
+                "noURLs": false,
+                "repeatable": true,
+                "type": "email",
+                "id": 3,
+                "label": "Email",
+                "placeholder": "you@company.com",
+                "isRequired": true,
+                "visibility": "visible",
+                "formId": 7,
+                "pageNumber": 1,
+                "fields": "",
+                "cssClass": ""
+            },
+            {
+                "is_payment": false,
+                "duplicatable": true,
+                "noURLs": true,
+                "repeatable": true,
+                "type": "phone",
+                "id": 4,
+                "label": "Phone number",
+                "placeholder": "+1 (555) 000-0000",
+                "phoneFormat": "international",
+                "isRequired": true,
+                "visibility": "visible",
+                "formId": 7,
+                "pageNumber": 1,
+                "fields": "",
+                "cssClass": ""
+            },
+            {
+                "is_payment": false,
+                "duplicatable": true,
+                "noURLs": false,
+                "repeatable": true,
+                "type": "select",
+                "id": 5,
+                "label": "Injury Type",
+                "placeholder": "Injury Type",
+                "isRequired": true,
+                "choices": [
+                    {
+                        "text": "Car accident",
+                        "value": "Car accident"
+                    },
+                    {
+                        "text": "Bicycle accident",
+                        "value": "Bicycle accident"
+                    },
+                    {
+                        "text": "Truck crash",
+                        "value": "Truck crash"
+                    },
+                    {
+                        "text": "Motorcycle wreck",
+                        "value": "Motorcycle wreck"
+                    },
+                    {
+                        "text": "Carbon monoxide poisoning",
+                        "value": "Carbon monoxide poisoning"
+                    },
+                    {
+                        "text": "Nursing home abuse",
+                        "value": "Nursing home abuse"
+                    },
+                    {
+                        "text": "Construction accident",
+                        "value": "Construction accident"
+                    },
+                    {
+                        "text": "Slip and fall injury",
+                        "value": "Slip and fall injury"
+                    },
+                    {
+                        "text": "Wrongful death",
+                        "value": "Wrongful death"
+                    },
+                    {
+                        "text": "Other",
+                        "value": "Other"
+                    }
+                ],
+                "visibility": "visible",
+                "formId": 7,
+                "pageNumber": 1,
+                "fields": "",
+                "cssClass": ""
+            },
+            {
+                "is_payment": false,
+                "duplicatable": true,
+                "noURLs": false,
+                "repeatable": true,
+                "type": "textarea",
+                "id": 6,
+                "label": "Message",
+                "placeholder": "",
+                "isRequired": false,
+                "visibility": "visible",
+                "formId": 7,
+                "pageNumber": 1,
+                "fields": "",
+                "cssClass": ""
+            }
+        ],
+        "is_active": "1",
+        "enableHoneypot": true,
+        "markupVersion": 2,
+        "validationPlacement": "above",
+        "subLabelPlacement": "above",
+        "validationSummary": true,
+        "requiredIndicator": "text",
+        "nextFieldId": 7,
+        "date_created": "2026-09-16 14:06:28",
+        "is_trash": "0",
+        "notifications": {
+            "mp-landing-admin": {
+                "id": "mp-landing-admin",
+                "isActive": true,
+                "to": "{admin_email}",
+                "name": "Admin Notification",
+                "event": "form_submission",
+                "toType": "email",
+                "subject": "New landing page lead",
+                "message": "{all_fields}"
+            }
+        },
+        "confirmations": {
+            "mp-landing-default": {
+                "id": "mp-landing-default",
+                "name": "Default Confirmation",
+                "isDefault": true,
+                "type": "message",
+                "message": "<p>Thank you. A member of our team will contact you shortly.</p>",
+                "url": "",
+                "pageId": 0,
+                "queryString": ""
+            }
+        }
+    }
+}

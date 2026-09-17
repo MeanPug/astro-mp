@@ -1,0 +1,187 @@
+/* Interactive pieces shared by blocks: header, carousel, accordion, footer. */
+
+/* ---------- header ---------- */
+.mp-header {
+    @apply bg-white;
+
+    &__inner {
+        @apply container flex items-center justify-between gap-6 py-5 lg:py-6;
+    }
+
+    &__logo {
+        @apply block w-44 md:w-56 lg:w-[336px];
+    }
+
+    &__contact {
+        @apply text-right;
+    }
+
+    &__contact-label {
+        @apply block font-body text-xs md:text-sm leading-5 text-ink;
+    }
+
+    &__phone {
+        @apply block font-heading font-semibold text-xl md:text-2xl lg:text-[32px] lg:leading-[44px] text-blue whitespace-nowrap hover:text-red transition-colors;
+    }
+}
+
+/* ---------- carousel (scripts/carousel.ts) ---------- */
+.mp-carousel {
+    @apply relative;
+
+    /* arrows and dots only once the script found more slides than fit */
+    &:not(.is-scrollable) {
+        .mp-carousel__arrow,
+        .mp-carousel__dots {
+            @apply hidden;
+        }
+    }
+
+    &__track {
+        @apply relative;
+    }
+
+    &__viewport {
+        @apply flex gap-6 overflow-x-auto snap-x snap-mandatory scroll-smooth;
+        scrollbar-width: none;
+
+        &::-webkit-scrollbar {
+            @apply hidden;
+        }
+    }
+
+    &__slide {
+        @apply snap-start shrink-0 w-[85%] sm:w-[calc(50%-12px)] lg:w-[calc((100%-48px)/3)];
+    }
+
+    &__arrow {
+        @apply absolute top-1/2 -translate-y-1/2 z-10 flex items-center justify-center size-8 rounded-full bg-red text-white shadow-card transition-colors hover:bg-red-dark disabled:opacity-30 disabled:cursor-default;
+
+        /* 32px arrow sits fully outside the slides with a 16px gap (48px offset) from lg up;
+           below lg the gutter is too narrow, so the arrow overlaps the slide edge */
+        &--prev {
+            @apply -left-4 lg:-left-12;
+        }
+
+        &--next {
+            @apply -right-4 lg:-right-12;
+        }
+    }
+
+    &__dots {
+        @apply flex items-center justify-center gap-2 pt-6;
+    }
+
+    &__dot {
+        @apply size-2 rounded-full bg-line transition-colors;
+
+        &.is-active {
+            @apply bg-red;
+        }
+    }
+}
+
+/* ---------- accordion (scripts/accordion.ts) ---------- */
+.mp-accordion {
+    @apply border-b border-line;
+
+    &__trigger {
+        @apply flex w-full items-center justify-between gap-6 text-left py-5 font-body font-semibold text-base md:text-lg leading-6 text-ink cursor-pointer;
+    }
+
+    &__icon {
+        @apply relative shrink-0 size-5 rounded-full border-[1.5px] border-red text-red;
+
+        &::before,
+        &::after {
+            content: '';
+            @apply absolute left-1/2 top-1/2 h-[1.5px] w-2.5 -translate-x-1/2 -translate-y-1/2 bg-red transition-transform duration-300;
+        }
+
+        &::after {
+            @apply rotate-90;
+        }
+    }
+
+    &__body {
+        @apply overflow-hidden max-h-0 transition-[max-height] duration-500 ease-in-out;
+    }
+
+    &__content {
+        @apply pb-6 pr-12 font-body text-base leading-6 text-ink-500;
+    }
+
+    &.open {
+        .mp-accordion__icon::after {
+            @apply rotate-0;
+        }
+    }
+}
+
+/* ---------- footer ---------- */
+.mp-footer {
+    @apply relative bg-surface-dark text-white overflow-hidden;
+
+    &__bg {
+        @apply absolute inset-0 size-full object-cover object-center;
+    }
+
+    &__inner {
+        @apply container relative flex flex-col items-center gap-4 py-10 text-center;
+    }
+
+    &__logo {
+        @apply block w-40 md:w-48;
+    }
+
+    &__meta {
+        @apply font-body text-sm leading-5;
+    }
+
+    &__links {
+        @apply flex flex-wrap items-center justify-center gap-x-4 gap-y-1 font-body text-sm leading-5;
+
+        a {
+            @apply hover:underline underline-offset-4;
+        }
+    }
+
+    &__disclaimer {
+        @apply font-body text-xs leading-4 text-white/80 max-w-4xl;
+    }
+}
+
+/* ---------- modal (MicroModal) ---------- */
+.mp-modal {
+    @apply hidden;
+
+    &.is-open {
+        @apply block;
+    }
+
+    .modal__overlay {
+        @apply fixed inset-0 z-[60] flex items-center justify-center bg-black/70 p-4;
+    }
+
+    .modal__container {
+        @apply relative w-full max-w-2xl max-h-[calc(100vh-2rem)] overflow-y-auto bg-white p-6 md:p-8;
+    }
+
+    &__close {
+        @apply absolute right-4 top-4 size-8 cursor-pointer text-ink;
+
+        &::before,
+        &::after {
+            content: '';
+            @apply absolute left-1/2 top-1/2 h-0.5 w-5 -translate-x-1/2 -translate-y-1/2 bg-current;
+        }
+
+        &::before {
+            @apply rotate-45;
+        }
+
+        &::after {
+            @apply -rotate-45;
+        }
+    }
+}

@@ -1,0 +1,32 @@
+---
+/** acf/mp-logo-strip — labelled rows of logos (Awards & Recognition | As Seen On). */
+import WpImage from '../ui/WpImage.astro';
+import { sectionAttrs, type BlockProps } from './_shared';
+
+const { block, reveal } = Astro.props as BlockProps<'acf/mp-logo-strip'>;
+const groups = (block.fields.groups ?? []).filter((g) => g.label || (g.logos?.length ?? 0) > 0);
+---
+
+<section {...sectionAttrs(block, reveal)} class="mp-section mp-logo-strip bg-white">
+    <!-- one row at desktop like the Figma strip: the groups size to their logos and never wrap -->
+    <div class="container flex flex-col gap-8 py-8 lg:flex-row lg:items-start lg:justify-between lg:gap-10 lg:py-10">
+        {groups.map((group, i) => (
+            <div class:list={['min-w-0', i > 0 ? 'lg:border-l lg:border-line lg:pl-10' : '', i === 0 ? 'lg:shrink-0' : 'lg:flex-1']}>
+                {group.label && <p class="mp-label pb-4">{group.label}</p>}
+                {group.logos && group.logos.length > 0 ? (
+                    <ul class="flex flex-wrap items-center gap-x-6 gap-y-4 lg:flex-nowrap lg:gap-x-8 xl:gap-x-10">
+                        {group.logos.map((logo) => (
+                            <li class="flex shrink-0 items-center">
+                                <WpImage image={logo} size="full" class="h-auto w-auto max-h-14 max-w-[150px] object-contain lg:max-h-[72px] xl:max-h-[88px] xl:max-w-[190px]" sizes="190px" />
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <div class="flex flex-wrap gap-6">
+                        {Array.from({ length: i === 0 ? 5 : 4 }, () => <div class="mp-placeholder h-12 w-24" data-label="logo"></div>)}
+                    </div>
+                )}
+            </div>
+        ))}
+    </div>
+</section>

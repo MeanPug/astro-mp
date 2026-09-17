@@ -1,0 +1,25 @@
+{
+  "name": "acf/mp-cta-form",
+  "title": "MP CTA Form",
+  "description": "Closing call to action with two buttons, a photo and the lead form.",
+  "category": "child-theme-blocks",
+  "icon": "feedback",
+  "keywords": [
+    "landing",
+    "cta-form"
+  ],
+  "acf": {
+    "mode": "preview",
+    "renderTemplate": "mp-cta-form.php"
+  },
+  "example": {
+    "attributes": {
+      "data": {
+        "is_preview": true
+      }
+    }
+  },
+  "supports": {
+    "anchor": true
+  }
+}

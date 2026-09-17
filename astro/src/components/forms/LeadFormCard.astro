@@ -1,0 +1,24 @@
+---
+/** White card with the lead Gravity Form: used by the hero and the closing CTA block. */
+import { gravityFormIdFromShortcode } from '../../lib/wp/url';
+import GravityForm from './GravityForm.astro';
+
+interface Props {
+    heading?: string | null;
+    shortcode?: string | null;
+    note?: string | null;
+    class?: string;
+}
+
+const { heading, shortcode, note, class: className } = Astro.props;
+const formId = gravityFormIdFromShortcode(shortcode);
+---
+
+{formId && (
+    <div class:list={['mp-form-card', className]}>
+        {heading && <h2 class="mp-form-card__heading">{heading}</h2>}
+        <div class="mp-form">
+            <GravityForm id={formId} footerNote={note} />
+        </div>
+    </div>
+)}

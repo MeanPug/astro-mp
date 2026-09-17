@@ -1,0 +1,18 @@
+---
+/**
+ * WYSIWYG / rendered HTML from WordPress. Internal hrefs are trailing-slashed the same way
+ * the PHP theme filters `the_content` (mp_trailingslash_links).
+ */
+import { trailingSlashLinks } from '../../lib/wp/url';
+
+interface Props {
+    html: string | null | undefined;
+    class?: string;
+    as?: 'div' | 'span' | 'p' | 'blockquote';
+    [attr: string]: unknown;
+}
+
+const { html, class: className, as: Tag = 'div', ...rest } = Astro.props as Props;
+---
+
+{html && <Tag class={className} set:html={trailingSlashLinks(html)} {...rest} />}

@@ -1,0 +1,14 @@
+/*
+ * Landing-page theme stylesheet (mp-*). Tokens live in tailwind.config.cjs; the layers below
+ * hold element defaults, the semantic classes blocks share, forms and interactive components.
+ */
+@import './fonts.css';
+
+@import 'tailwindcss/base';
+@import './base.css';
+
+@import 'tailwindcss/components';
+@import './forms.css';
+@import './components.css';
+
+@import 'tailwindcss/utilities';

@@ -1,0 +1,37 @@
+---
+/** acf/mp-cta-form — closing call to action with two buttons and a photo beside the lead form. */
+import LeadFormCard from '../forms/LeadFormCard.astro';
+import Link from '../ui/Link.astro';
+import Placeholder from '../ui/Placeholder.astro';
+import RichText from '../ui/RichText.astro';
+import { sectionAttrs, type BlockProps } from './_shared';
+
+const { block, reveal } = Astro.props as BlockProps<'acf/mp-cta-form'>;
+const { heading, content, cta_primary: ctaPrimary, cta_secondary: ctaSecondary, image, form_heading, form_shortcode, form_note } = block.fields;
+---
+
+<section {...sectionAttrs(block, reveal)} class="mp-section mp-cta-form bg-white">
+    <div class="grid grid-cols-1 lg:grid-cols-[57fr_43fr]">
+        <div class="flex flex-col">
+            <div class="bg-red px-5 py-12 text-white lg:px-16 lg:py-16">
+                <div class="max-w-[560px]">
+                    {heading && <h2 class="font-heading text-h2 text-white">{heading}</h2>}
+                    <RichText html={content} class="mp-prose mp-prose--light pt-6" />
+                    {(ctaPrimary || ctaSecondary) && (
+                        <div class="flex flex-wrap gap-4 pt-8">
+                            <Link link={ctaPrimary} class="mp-button mp-button--outline-white" />
+                            <Link link={ctaSecondary} class="mp-button mp-button--white" />
+                        </div>
+                    )}
+                </div>
+            </div>
+            <div class="relative min-h-[240px] flex-1 lg:min-h-[280px]">
+                <Placeholder image={image} label="City photo" class="absolute inset-0 size-full" imageClass="object-cover" sizes="(min-width: 1024px) 57vw, 100vw" />
+            </div>
+        </div>
+
+        <div class="flex items-start px-5 py-10 lg:px-12 lg:py-12">
+            <LeadFormCard heading={form_heading} shortcode={form_shortcode} note={form_note} class="w-full !shadow-none !px-0 !py-0" />
+        </div>
+    </div>
+</section>

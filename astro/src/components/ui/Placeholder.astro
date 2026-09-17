@@ -1,0 +1,26 @@
+---
+/**
+ * Stand-in for an image that has not been uploaded yet (assets pending from Figma).
+ * Renders the WpImage when there is one, otherwise a labelled hatched box of the same shape.
+ */
+import type { AcfImage } from '../../lib/wp/acf';
+import WpImage from './WpImage.astro';
+
+interface Props {
+    image: AcfImage | null | undefined;
+    label: string;
+    class?: string;
+    imageClass?: string;
+    size?: keyof AcfImage['sizes'];
+    sizes?: string;
+    loading?: 'lazy' | 'eager';
+}
+
+const { image, label, class: className = '', imageClass = '', size = 'large', sizes, loading } = Astro.props;
+---
+
+{image ? (
+    <WpImage image={image} size={size} class:list={[className, imageClass]} sizes={sizes} loading={loading} />
+) : (
+    <div class:list={['mp-placeholder', className]} data-label={label} role="img" aria-label={label}></div>
+)}

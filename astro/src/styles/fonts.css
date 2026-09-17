@@ -1,0 +1,6 @@
+/*
+ * Landing-page fonts: Poppins (headings) and Montserrat (copy, UI), as in the Figma file.
+ * Loaded from Google Fonts for now; self-host the woff2 files in public/fonts before launch
+ * (drop the @import, add @font-face rules here) to remove the third-party request.
+ */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&family=Poppins:wght@500;600;700;800&display=swap');

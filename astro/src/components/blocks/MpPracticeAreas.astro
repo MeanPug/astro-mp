@@ -1,0 +1,48 @@
+---
+/** acf/mp-practice-areas — heading, intro and a centred grid of icon cards. */
+import RichText from '../ui/RichText.astro';
+import WpImage from '../ui/WpImage.astro';
+import { trailingSlashUrl } from '../../lib/wp/url';
+import { sectionAttrs, type BlockProps } from './_shared';
+
+const { block, reveal } = Astro.props as BlockProps<'acf/mp-practice-areas'>;
+const { heading, content, footnote } = block.fields;
+const items = block.fields.items ?? [];
+// icons are red SVGs: the filter turns them white on the highlighted card and on hover
+---
+
+<section {...sectionAttrs(block, reveal)} class="mp-section mp-practice-areas bg-surface">
+    <div class="container py-14 text-center lg:py-20">
+        {heading && <h2 class="mp-h2">{heading}</h2>}
+        <RichText html={content} class="mp-prose pt-4" />
+
+        {items.length > 0 && (
+            <ul class="flex flex-wrap justify-center gap-4 pt-10 lg:gap-6">
+                {items.map((item) => {
+                    const Tag = item.link?.url ? 'a' : 'div';
+                    return (
+                        <li class="w-[calc(50%-8px)] sm:w-[calc(33.333%-11px)] lg:w-[222px]">
+                            <Tag
+                                href={item.link?.url ? trailingSlashUrl(item.link.url) : undefined}
+                                target={item.link?.target || undefined}
+                                class:list={[
+                                    'group flex h-full min-h-[200px] flex-col items-center justify-center gap-4 px-4 py-8 text-center transition-colors lg:min-h-[240px]',
+                                    item.highlighted ? 'bg-red text-white' : 'bg-white text-red hover:bg-red hover:text-white',
+                                ]}
+                            >
+                                {item.icon ? (
+                                    <WpImage image={item.icon} size="thumbnail" class:list={['size-12 object-contain transition-[filter]', item.highlighted ? 'brightness-0 invert' : 'group-hover:brightness-0 group-hover:invert']} sizes="48px" />
+                                ) : (
+                                    <span class="size-12 rounded-full border-2 border-current opacity-40" aria-hidden="true"></span>
+                                )}
+                                {item.title && <span class="font-heading font-semibold text-lg leading-6 lg:text-xl">{item.title}</span>}
+                            </Tag>
+                        </li>
+                    );
+                })}
+            </ul>
+        )}
+
+        {footnote && <p class="mp-lead mx-auto max-w-3xl pt-10">{footnote}</p>}
+    </div>
+</section>

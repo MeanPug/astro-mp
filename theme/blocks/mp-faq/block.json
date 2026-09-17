@@ -1,0 +1,25 @@
+{
+  "name": "acf/mp-faq",
+  "title": "MP FAQ",
+  "description": "Accordion of questions with an optional note box.",
+  "category": "child-theme-blocks",
+  "icon": "editor-help",
+  "keywords": [
+    "landing",
+    "faq"
+  ],
+  "acf": {
+    "mode": "preview",
+    "renderTemplate": "mp-faq.php"
+  },
+  "example": {
+    "attributes": {
+      "data": {
+        "is_preview": true
+      }
+    }
+  },
+  "supports": {
+    "anchor": true
+  }
+}

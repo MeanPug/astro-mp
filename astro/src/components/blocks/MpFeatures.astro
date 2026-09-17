@@ -1,0 +1,33 @@
+---
+/** acf/mp-features — "Why choose us": columns with icon, title and text, red left rule. */
+import WpImage from '../ui/WpImage.astro';
+import { sectionAttrs, type BlockProps } from './_shared';
+
+const { block, reveal } = Astro.props as BlockProps<'acf/mp-features'>;
+const { heading, footnote } = block.fields;
+const items = block.fields.items ?? [];
+---
+
+<section {...sectionAttrs(block, reveal)} class="mp-section mp-features bg-surface">
+    <div class="container py-14 lg:py-20">
+        {heading && <h2 class="mp-h2 mx-auto max-w-3xl text-center">{heading}</h2>}
+
+        {items.length > 0 && (
+            <ul class="grid grid-cols-1 gap-8 pt-12 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6">
+                {items.map((item) => (
+                    <li class="border-l-2 border-red pl-6 lg:pl-8">
+                        {item.icon ? (
+                            <WpImage image={item.icon} size="thumbnail" class="size-9 object-contain" sizes="36px" />
+                        ) : (
+                            <span class="block size-9 rounded-full bg-red/15" aria-hidden="true"></span>
+                        )}
+                        {item.title && <h3 class="font-body font-medium text-xl leading-7 text-red pt-5 lg:text-2xl lg:leading-8">{item.title}</h3>}
+                        {item.content && <p class="mp-lead pt-4 !text-base">{item.content}</p>}
+                    </li>
+                ))}
+            </ul>
+        )}
+
+        {footnote && <p class="mp-lead mx-auto max-w-3xl pt-12 text-center">{footnote}</p>}
+    </div>
+</section>

@@ -1,0 +1,63 @@
+---
+/**
+ * <head> meta from Yoast (yoast_head_json of the page). WordPress URLs were relativized
+ * by the API, so canonical/og:url are re-based on Astro.site here.
+ */
+import type { WpSeo } from '../../lib/wp/types';
+
+interface Props {
+    seo: WpSeo | null | undefined;
+    fallbackTitle: string;
+    siteName: string;
+}
+
+const { seo, fallbackTitle, siteName } = Astro.props;
+const json = (seo?.json ?? {}) as Record<string, unknown>;
+const site = Astro.site ?? new URL(Astro.url.origin);
+
+const absolute = (value: unknown): string | undefined => {
+    if (typeof value !== 'string' || !value) return undefined;
+    return value.startsWith('/') ? new URL(value, site).toString() : value;
+};
+
+// Yoast delivers already HTML-encoded strings; Astro escapes text again, so decode first
+const decode = (value: string) =>
+    value.replace(/&(amp|lt|gt|quot|#0?39|#8217|#8216|#8211|#8212|nbsp);/g, (m, code: string) => ({ amp: '&', lt: '<', gt: '>', quot: '"', '#039': "'", '#39': "'", '#8217': '\u2019', '#8216': '\u2018', '#8211': '\u2013', '#8212': '\u2014', nbsp: '\u00a0' })[code] ?? m);
+
+const str = (key: string) => (typeof json[key] === 'string' ? decode(json[key] as string) : undefined);
+
+const title = str('title') ?? `${fallbackTitle} | ${siteName}`;
+const description = str('description');
+const robots = json.robots as Record<string, string> | undefined;
+const robotsContent = robots ? Object.values(robots).filter(Boolean).join(', ') : undefined;
+const canonical = absolute(str('canonical')) ?? new URL(Astro.url.pathname, site).toString();
+
+const ogImages = (json.og_image as { url: string; width?: number; height?: number; type?: string }[] | undefined) ?? [];
+
+// Yoast schema graph: internal ids/urls become absolute on the front-end origin
+const schema = json.schema ? JSON.stringify(json.schema).replace(/"(\/[^"\s]*)"/g, (_m, path: string) => (path.startsWith('//') ? `"${path}"` : `"${new URL(path, site).toString()}"`)) : '';
+---
+
+<title>{title}</title>
+{description && <meta name="description" content={description} />}
+{robotsContent && <meta name="robots" content={robotsContent} />}
+<link rel="canonical" href={canonical} />
+
+<meta property="og:locale" content={str('og_locale') ?? 'en_US'} />
+<meta property="og:type" content={str('og_type') ?? 'website'} />
+<meta property="og:title" content={str('og_title') ?? title} />
+{(str('og_description') ?? description) && <meta property="og:description" content={str('og_description') ?? description} />}
+<meta property="og:url" content={absolute(str('og_url')) ?? canonical} />
+<meta property="og:site_name" content={str('og_site_name') ?? siteName} />
+{str('article_modified_time') && <meta property="article:modified_time" content={str('article_modified_time')} />}
+{ogImages.map((image) => (
+    <>
+        <meta property="og:image" content={absolute(image.url)} />
+        {image.width && <meta property="og:image:width" content={String(image.width)} />}
+        {image.height && <meta property="og:image:height" content={String(image.height)} />}
+        {image.type && <meta property="og:image:type" content={image.type} />}
+    </>
+))}
+<meta name="twitter:card" content={str('twitter_card') ?? 'summary_large_image'} />
+
+{schema && <script is:inline type="application/ld+json" set:html={schema} />}

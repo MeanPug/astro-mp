@@ -1,0 +1,25 @@
+{
+  "name": "acf/mp-features",
+  "title": "MP Features",
+  "description": "Why choose us: columns with icon, title and short text.",
+  "category": "child-theme-blocks",
+  "icon": "star-filled",
+  "keywords": [
+    "landing",
+    "features"
+  ],
+  "acf": {
+    "mode": "preview",
+    "renderTemplate": "mp-features.php"
+  },
+  "example": {
+    "attributes": {
+      "data": {
+        "is_preview": true
+      }
+    }
+  },
+  "supports": {
+    "anchor": true
+  }
+}

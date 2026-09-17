@@ -9,7 +9,8 @@
  *   GET /globals         theme options, menus, logo, site info
  *   GET /form/{id}       Gravity Form schema for rendering the form in Astro
  *
- * Extra WP-side glue for a decoupled front-end:
+ * Extra WP-side glue for a decoupled front-end, configured in Theme Settings > Astro Front-end
+ * (constants MP_ASTRO_SITE_URL, MP_ASTRO_ORIGINS, MP_ASTRO_DEPLOY_HOOK_URL in wp-config.php override):
  *   - CORS: the Astro origin(s) may call wp-json (Gravity Forms submissions run in the browser)
  *   - rebuild webhook: publishing content pings the static host's deploy hook
  *
@@ -25,14 +26,47 @@ function mp_astro_route_post_types()
 }
 
 /**
- * Origins allowed to call the REST API from the browser. Configure with the
- * MP_ASTRO_ORIGINS constant (comma separated) in wp-config.php; defaults to the
- * local `astro dev` server.
+ * A front-end setting: a constant in wp-config.php wins, otherwise the value from
+ * Theme Settings > Astro Front-end (ACF options page), otherwise the default.
+ */
+function mp_astro_setting($option_name, $constant, $default = '')
+{
+    if (defined($constant) && constant($constant)) {
+        return constant($constant);
+    }
+    if (function_exists('get_field')) {
+        $value = get_field($option_name, 'option');
+        if (is_string($value) && trim($value) !== '') {
+            return trim($value);
+        }
+    }
+    return $default;
+}
+
+/** Public URL of the Astro front-end, or '' when not configured. */
+function mp_astro_site_url()
+{
+    return untrailingslashit(mp_astro_setting('astro_site_url', 'MP_ASTRO_SITE_URL'));
+}
+
+/**
+ * Origins allowed to call the REST API from the browser (Gravity Forms submissions). One per
+ * line or comma separated; `*.example.com` matches any https subdomain. The local `astro dev`
+ * origin is always included on local/development installs.
  */
 function mp_astro_allowed_origins()
 {
-    $origins = defined('MP_ASTRO_ORIGINS') ? MP_ASTRO_ORIGINS : 'http://localhost:4321';
-    return array_filter(array_map('trim', explode(',', $origins)));
+    $raw = mp_astro_setting('astro_allowed_origins', 'MP_ASTRO_ORIGINS');
+    // an Origin header is scheme://host[:port] with no path, so trailing slashes are dropped
+    $origins = array_filter(array_map(function ($origin) {
+        return rtrim(trim($origin), '/');
+    }, preg_split('/[\s,]+/', (string) $raw)));
+
+    if (in_array(wp_get_environment_type(), array('local', 'development'), true)) {
+        $origins[] = 'http://localhost:4321';
+    }
+
+    return array_values(array_unique($origins));
 }
 
 add_filter('allowed_http_origins', function ($origins) {
@@ -605,12 +639,13 @@ function mp_astro_rest_form(WP_REST_Request $request)
 
 /**
  * Publishing, updating or unpublishing content pings the static host so it rebuilds.
- * Set MP_ASTRO_DEPLOY_HOOK_URL in wp-config.php (Vercel/WP Engine deploy hook URL).
- * Debounced to one ping per request; the transient prevents bursts from bulk edits.
+ * Hook URL: Theme Settings > Astro Front-end > Deploy hook URL (or MP_ASTRO_DEPLOY_HOOK_URL).
+ * The transient prevents bursts from bulk edits.
  */
 function mp_astro_trigger_rebuild()
 {
-    if (!defined('MP_ASTRO_DEPLOY_HOOK_URL') || !MP_ASTRO_DEPLOY_HOOK_URL) {
+    $hook = mp_astro_setting('astro_deploy_hook_url', 'MP_ASTRO_DEPLOY_HOOK_URL');
+    if (!$hook) {
         return;
     }
 
@@ -619,7 +654,7 @@ function mp_astro_trigger_rebuild()
     }
     set_transient('mp_astro_rebuild_queued', 1, 30);
 
-    wp_remote_post(MP_ASTRO_DEPLOY_HOOK_URL, array(
+    wp_remote_post($hook, array(
         'timeout' => 5,
         'blocking' => false,
         'body' => wp_json_encode(array('source' => 'wordpress', 'site' => home_url('/'))),

@@ -33,7 +33,7 @@ docker compose up -d
 The `astro` container installs its dependencies on first start (about a minute), regenerates
 the block types and starts `astro dev`. WordPress itself has no public templates: opening
 http://localhost:8000 shows a notice pointing to the editor and the API (or redirects to the
-front-end when `MP_ASTRO_SITE_URL` is defined in `wp-config.php`).
+front-end once its URL is set in Theme Settings > Astro Front-end).
 
 Fresh WordPress without a dump:
 
@@ -43,12 +43,9 @@ docker compose exec -u www-data wordpress wp theme activate astro-mp-theme
 ```
 
 Then install ACF Pro and Gravity Forms in the admin, or import the `.wpress` dump with
-All-in-One WP Migration. The Astro origin must be allowed to call the REST API; locally
-`http://localhost:4321` is allowed by default, for other origins add to `wp-config.php`:
-
-```php
-define('MP_ASTRO_ORIGINS', 'https://www.example.com,https://preview.example.com');
-```
+All-in-One WP Migration. The Astro origin must be allowed to call the REST API: locally
+`http://localhost:4321` is allowed automatically (the install runs as `development`), other
+origins are entered in Theme Settings > Astro Front-end > Allowed origins.
 
 ## 3. Day-to-day commands
 
@@ -75,8 +72,8 @@ in `docker-compose.yml`).
    `form/{id}` returns a Gravity Form definition.
 3. `astro/src/pages/[...slug].astro` renders the page: `BlockRenderer.astro` maps each
    `acf/<slug>` to `components/blocks/<Component>.astro`.
-4. Publishing in WordPress can trigger a rebuild of the static host through
-   `MP_ASTRO_DEPLOY_HOOK_URL` in `wp-config.php`.
+4. Publishing in WordPress triggers a rebuild of the static host through the deploy hook
+   entered in Theme Settings > Astro Front-end (see "What triggers a rebuild" in section 10).
 
 ## 5. Creating a new block
 
@@ -203,14 +200,16 @@ Notes for new forms:
 - Redirect confirmations with `{embed_url}` are resolved in the browser to the page the form
   is on, because the API has no embed page.
 - Test a form from the front-end (not from wp-admin): the submission must succeed from the
-  Astro origin, which is what `MP_ASTRO_ORIGINS` allows.
+  Astro origin, which is what Theme Settings > Astro Front-end > Allowed origins permits.
 
 ## 7. Theme options used by the layout
 
 Theme Settings (ACF options page): `contact_phone` (header phone), `footer_tagline`
 (copyright line), `footer_attorney_advertising` (disclaimer), `footer_logo`,
 `footer_background` (photo behind the footer), `global_modal_form` (popup form shortcode).
-Menu location `footer-1` holds the footer links. The site logo is the WordPress custom logo
+Tab **Astro Front-end**: `astro_site_url`, `astro_allowed_origins`, `astro_deploy_hook_url`
+(front-end URL, CORS origins, Netlify build hook; see section 10). Saving Theme Settings
+triggers a rebuild. Menu location `footer-1` holds the footer links. The site logo is the WordPress custom logo
 (Appearance > Customize); without one the site name is shown as text. The front page is
 whatever Settings > Reading sets as the static homepage.
 
@@ -240,7 +239,7 @@ whatever Settings > Reading sets as the static homepage.
 | Astro container exits with "Another astro dev server is already running" | Stale `astro/.astro/dev.json` lock. The compose command removes it; if it persists, delete the file. |
 | A block renders nothing on the front-end | Its name is missing in `BlockRenderer.astro`, or the block was renamed. In dev the HTML has a `<!-- TODO block acf/... -->` comment. |
 | Form is missing on a page | The `form_shortcode` field is empty or its quotes got mangled (see "Scripting content"). Check `curl .../astro/v1/page?path=/...` for the field. |
-| Form submits but browser shows a network error | Front-end origin not in `MP_ASTRO_ORIGINS` (CORS). |
+| Form submits but browser shows a network error | Front-end origin missing in Theme Settings > Astro Front-end > Allowed origins (CORS). |
 | Save button greyed out in the editor | Site Audit Trail summary required (Page sidebar). |
 | Section looks blank right after scrolling in screenshots | Scroll reveal animation (`data-inviewport`); content fades in 0.7s later. |
 | Type errors after editing fields | Run `npm run gen:types`, then fix the component. |
@@ -256,11 +255,11 @@ Two hosts: WordPress (editor + API) on WP Engine, the static Astro output on Net
    content and media in one archive).
 2. Upload `theme/` as `wp-content/themes/astro-mp-theme` (SFTP or WP Engine's Git Push) and
    activate it. Permalinks: post name.
-3. Upload `deploy/wpengine/mu-plugins/mp-astro-config.php` to `wp-content/mu-plugins/` and
-   fill in the constants: `MP_ASTRO_ORIGINS` (Netlify URL, `*.netlify.app` for deploy previews),
-   `MP_ASTRO_DEPLOY_HOOK_URL` (Netlify build hook), `MP_ASTRO_SITE_URL` (front-end URL, makes
-   WordPress redirect visitors there). WP Engine manages `wp-config.php`, so constants go in
-   the mu-plugin.
+3. In wp-admin open MeanPug Theme Settings > tab **Astro Front-end** and fill in: **Front-end
+   URL** (the Netlify URL; WordPress redirects visitors there), **Allowed origins** (the
+   Netlify URL, plus `*.netlify.app` for deploy previews), **Deploy hook URL** (from Netlify,
+   see 10.2). Constants `MP_ASTRO_SITE_URL`, `MP_ASTRO_ORIGINS`, `MP_ASTRO_DEPLOY_HOOK_URL` in
+   `wp-config.php` override these fields when defined.
 4. Check `https://<install>.wpengine.com/wp-json/astro/v1/routes` answers and lists the pages.
 
 ### 10.2 Front-end on Netlify
@@ -276,14 +275,30 @@ Two hosts: WordPress (editor + API) on WP Engine, the static Astro output on Net
 3. Deploy. The build fetches every route from WP Engine, so the API must be reachable from
    Netlify's build servers (no HTTP auth / IP allow-list on the WP Engine environment, or add
    Netlify's ranges).
-4. Site settings > Build & deploy > Build hooks > add one named "WordPress publish", copy its
-   URL into `MP_ASTRO_DEPLOY_HOOK_URL` on WP Engine. From then on publishing a page, saving
-   Theme Settings or a menu rebuilds the site.
+4. Project configuration > Build & deploy > Continuous deployment > Build hooks > Add build
+   hook, name it "WordPress publish", branch `main`; copy its URL into Theme Settings >
+   Astro Front-end > Deploy hook URL on WP Engine. The hook URL is a secret: keep it out of git.
 5. Test a form submission on the Netlify URL: the browser posts to WP Engine; a CORS error
-   means the origin is missing in `MP_ASTRO_ORIGINS`.
+   means the origin is missing in Theme Settings > Astro Front-end > Allowed origins.
+6. If the Netlify URL shows "This site is private", open Project configuration > General >
+   Visitor access > Project visibility and set production (and previews) to Public.
 
 Media is served from WP Engine (the `srcset` URLs point there); `dist/404.html` is used by
 Netlify for unknown paths.
+
+### 10.3 What triggers a rebuild
+
+| Action in WordPress | Rebuild |
+|---|---|
+| Publish, update, unpublish or delete a page, post, team or testimonial | yes |
+| Save Theme Settings | yes |
+| Save a menu | yes |
+| Drafts, autosaves, revisions | no |
+| Clearing the WP Engine or WP Rocket cache | no |
+| Media uploads, plugin or WordPress settings changes | no |
+
+Bursts are collapsed to one build per 30 seconds. To rebuild by hand without changing content:
+Netlify > Deploys > Trigger deploy, or `curl -X POST -d '{}' <build hook URL>`.
 
 ## 11. Fonts
 

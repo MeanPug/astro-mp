@@ -1220,6 +1220,81 @@
             "prepend": "",
             "append": "",
             "maxlength": ""
+        },
+        {
+            "key": "field_mpastro_tab",
+            "label": "Astro Front-end",
+            "name": "",
+            "aria-label": "",
+            "type": "tab",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "placement": "top",
+            "endpoint": 0,
+            "selected": 0
+        },
+        {
+            "key": "field_mpastro_site_url",
+            "label": "Front-end URL",
+            "name": "astro_site_url",
+            "aria-label": "",
+            "type": "url",
+            "instructions": "Public URL of the Astro site, e.g. https://example.netlify.app. When set, visitors of WordPress URLs are redirected there; empty shows a notice page.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "allow_in_bindings": 0,
+            "placeholder": "https://"
+        },
+        {
+            "key": "field_mpastro_origins",
+            "label": "Allowed origins",
+            "name": "astro_allowed_origins",
+            "aria-label": "",
+            "type": "textarea",
+            "instructions": "Origins allowed to submit forms to the REST API (CORS), one per line. `*.netlify.app` also allows Netlify deploy previews. http://localhost:4321 is always allowed on local installs.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 0,
+            "rows": 4,
+            "placeholder": "https://example.netlify.app\n*.netlify.app",
+            "new_lines": ""
+        },
+        {
+            "key": "field_mpastro_hook",
+            "label": "Deploy hook URL",
+            "name": "astro_deploy_hook_url",
+            "aria-label": "",
+            "type": "url",
+            "instructions": "Netlify build hook (Project configuration > Build & deploy > Build hooks). Publishing content, saving these settings or a menu triggers a rebuild. Treat it as a secret.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "allow_in_bindings": 0,
+            "placeholder": "https://api.netlify.com/build_hooks/..."
         }
     ],
     "location": [
@@ -1243,5 +1318,5 @@
     "display_title": "",
     "allow_ai_access": false,
     "ai_description": "",
-    "modified": 1789100000
+    "modified": 1789200000
 }

@@ -36,6 +36,9 @@ services:
        WORDPRESS_DB_PASSWORD: wordpress
        WP_DEBUG: true
        WP_ENVIRONMENT_TYPE: development
+       # the env var is not visible to Apache's PHP, so the constant goes into wp-config.php on first install
+       WORDPRESS_CONFIG_EXTRA: |
+         define('WP_ENVIRONMENT_TYPE', 'development');
 
    astro:
      image: node:22

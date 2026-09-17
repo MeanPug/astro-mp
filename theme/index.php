@@ -2,14 +2,14 @@
 
 /**
  * The only template of the theme. WordPress does not serve the public site: the Astro
- * front-end does (see /astro). Anyone hitting a WordPress URL gets a short notice, or a
- * redirect to the front-end when MP_ASTRO_SITE_URL is defined in wp-config.php.
+ * front-end does (see /astro). Anyone hitting a WordPress URL gets a short notice, or a redirect
+ * to the front-end when its URL is set in Theme Settings > Astro Front-end (or MP_ASTRO_SITE_URL).
  *
  * @package astro-mp-theme
  */
 
-if (defined('MP_ASTRO_SITE_URL') && MP_ASTRO_SITE_URL) {
-    $target = untrailingslashit(MP_ASTRO_SITE_URL) . ($_SERVER['REQUEST_URI'] ?? '/');
+if ($site_url = mp_astro_site_url()) {
+    $target = $site_url . ($_SERVER['REQUEST_URI'] ?? '/');
     wp_redirect($target, 302);
     exit;
 }

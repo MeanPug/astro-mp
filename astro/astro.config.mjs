@@ -4,8 +4,13 @@ import { defineConfig, envField } from 'astro/config';
 // https://astro.build/config
 export default defineConfig({
     // the public URL of the deployed front-end; canonical/OG tags are rewritten to it
-    // SITE_URL wins; on Netlify fall back to the deploy's own URL (previews get their own origin)
-    site: process.env.SITE_URL || process.env.DEPLOY_PRIME_URL || process.env.URL || 'http://localhost:4321',
+    // SITE_URL wins. On Netlify: production uses the site URL, previews/branches their own origin
+    // (DEPLOY_PRIME_URL is the `main--site` alias in production, so it must not win there).
+    site:
+        process.env.SITE_URL ||
+        (process.env.CONTEXT === 'production' ? process.env.URL : process.env.DEPLOY_PRIME_URL) ||
+        process.env.URL ||
+        'http://localhost:4321',
     output: 'static',
     trailingSlash: 'always',
     build: {

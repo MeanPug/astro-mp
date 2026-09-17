@@ -6,7 +6,7 @@
  * shows validation errors / the confirmation; without JS the form posts to WordPress.
  */
 import { PUBLIC_WP_URL } from 'astro:env/client';
-import { findForm } from '../../lib/wp/client';
+import { findForm, normalizeOrigin } from '../../lib/wp/client';
 import type { GfField } from '../../lib/gf/types';
 import { trailingSlashLinks } from '../../lib/wp/url';
 
@@ -34,7 +34,7 @@ const gridSpan = (field: GfField) => {
 };
 
 const defaultConfirmation = form?.confirmations.find((c) => c.isDefault) ?? form?.confirmations[0];
-const submitUrl = form ? `${PUBLIC_WP_URL.replace(/\/$/, '')}/wp-json/gf/v2/forms/${form.id}/submissions` : '';
+const submitUrl = form ? `${normalizeOrigin(PUBLIC_WP_URL)}/wp-json/gf/v2/forms/${form.id}/submissions` : '';
 ---
 
 {form && (

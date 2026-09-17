@@ -2,7 +2,13 @@ import { WP_API_URL } from 'astro:env/server';
 import type { GfForm } from '../gf/types';
 import type { WpGlobals, WpPage, WpRoutesResponse } from './types';
 
-const API_BASE = `${WP_API_URL.replace(/\/$/, '')}/wp-json/astro/v1`;
+/** `example.wpengine.com` and `https://example.wpengine.com/` both become `https://example.wpengine.com`. */
+export function normalizeOrigin(value: string): string {
+    const trimmed = value.trim().replace(/\/+$/, '');
+    return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+}
+
+const API_BASE = `${normalizeOrigin(WP_API_URL)}/wp-json/astro/v1`;
 
 /** One fetch per URL per build/dev process: pages share globals, forms repeat across pages. */
 const cache = new Map<string, Promise<unknown>>();

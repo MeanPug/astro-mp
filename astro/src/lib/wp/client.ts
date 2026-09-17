@@ -19,7 +19,16 @@ class WpApiError extends Error {
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
     const url = `${API_BASE}${path}`;
-    const response = await fetch(url, { ...init, headers: { Accept: 'application/json', ...init?.headers } });
+    let response: Response;
+    try {
+        response = await fetch(url, { ...init, headers: { Accept: 'application/json', ...init?.headers } });
+    } catch (error) {
+        // a network-level failure (DNS, refused connection) means WordPress is not reachable from here
+        const hint = /localhost|127\.0\.0\.1|wordpress/.test(WP_API_URL)
+            ? 'WP_API_URL still points at the local Docker WordPress. Set WP_API_URL (and PUBLIC_WP_URL) to the public WordPress URL in the build environment.'
+            : 'Check that the WordPress site is up and reachable from the build machine (no HTTP auth / IP allow-list on the REST API).';
+        throw new Error(`Cannot reach WordPress at ${url}: ${(error as Error).message}. ${hint}`);
+    }
     if (!response.ok) {
         let message = response.statusText;
         try {

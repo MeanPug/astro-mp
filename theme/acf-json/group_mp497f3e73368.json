@@ -1,173 +1,199 @@
 {
-  "key": "group_mp497f3e73368",
-  "title": "Block: MP Landing Hero",
-  "fields": [
-    {
-      "key": "field_mpbe10595b4d0",
-      "label": "Heading",
-      "name": "heading",
-      "aria-label": "",
-      "type": "text",
-      "instructions": "",
-      "required": 0,
-      "conditional_logic": 0,
-      "wrapper": {
-        "width": "",
-        "class": "",
-        "id": ""
-      },
-      "default_value": "",
-      "maxlength": "",
-      "allow_in_bindings": 0,
-      "placeholder": "",
-      "prepend": "",
-      "append": ""
-    },
-    {
-      "key": "field_mp4b9fa25ccc8",
-      "label": "Content",
-      "name": "content",
-      "aria-label": "",
-      "type": "wysiwyg",
-      "instructions": "",
-      "required": 0,
-      "conditional_logic": 0,
-      "wrapper": {
-        "width": "",
-        "class": "",
-        "id": ""
-      },
-      "default_value": "",
-      "allow_in_bindings": 0,
-      "tabs": "all",
-      "toolbar": "basic",
-      "media_upload": 0,
-      "delay": 0
-    },
-    {
-      "key": "field_mpfb9b7f721c2",
-      "label": "CTA",
-      "name": "cta",
-      "aria-label": "",
-      "type": "link",
-      "instructions": "",
-      "required": 0,
-      "conditional_logic": 0,
-      "wrapper": {
-        "width": "",
-        "class": "",
-        "id": ""
-      },
-      "return_format": "array",
-      "allow_in_bindings": 0
-    },
-    {
-      "key": "field_mpa62f7d9a393",
-      "label": "Background Image",
-      "name": "background_image",
-      "aria-label": "",
-      "type": "image",
-      "instructions": "",
-      "required": 0,
-      "conditional_logic": 0,
-      "wrapper": {
-        "width": "",
-        "class": "",
-        "id": ""
-      },
-      "return_format": "id",
-      "library": "all",
-      "min_width": "",
-      "min_height": "",
-      "min_size": "",
-      "max_width": "",
-      "max_height": "",
-      "max_size": "",
-      "mime_types": "",
-      "allow_in_bindings": 0,
-      "preview_size": "medium"
-    },
-    {
-      "key": "field_mp73f183cfbde",
-      "label": "Form Heading",
-      "name": "form_heading",
-      "aria-label": "",
-      "type": "text",
-      "instructions": "",
-      "required": 0,
-      "conditional_logic": 0,
-      "wrapper": {
-        "width": "",
-        "class": "",
-        "id": ""
-      },
-      "default_value": "",
-      "maxlength": "",
-      "allow_in_bindings": 0,
-      "placeholder": "",
-      "prepend": "",
-      "append": ""
-    },
-    {
-      "key": "field_mp7dee34bcc14",
-      "label": "Form Shortcode",
-      "name": "form_shortcode",
-      "aria-label": "",
-      "type": "text",
-      "instructions": "Gravity Forms shortcode, e.g. [gravityform id=\"7\"]",
-      "required": 0,
-      "conditional_logic": 0,
-      "wrapper": {
-        "width": "",
-        "class": "",
-        "id": ""
-      },
-      "default_value": "",
-      "maxlength": "",
-      "allow_in_bindings": 0,
-      "placeholder": "",
-      "prepend": "",
-      "append": ""
-    },
-    {
-      "key": "field_mpf692ba31cec",
-      "label": "Form Note",
-      "name": "form_note",
-      "aria-label": "",
-      "type": "text",
-      "instructions": "",
-      "required": 0,
-      "conditional_logic": 0,
-      "wrapper": {
-        "width": "",
-        "class": "",
-        "id": ""
-      },
-      "default_value": "100% Secure & Confidential",
-      "maxlength": "",
-      "allow_in_bindings": 0,
-      "placeholder": "",
-      "prepend": "",
-      "append": ""
-    }
-  ],
-  "location": [
-    [
-      {
-        "param": "block",
-        "operator": "==",
-        "value": "acf/mp-hero"
-      }
-    ]
-  ],
-  "menu_order": 0,
-  "position": "normal",
-  "style": "default",
-  "label_placement": "top",
-  "instruction_placement": "label",
-  "hide_on_screen": "",
-  "active": true,
-  "description": "",
-  "show_in_rest": 0,
-  "modified": 1789000000
+    "key": "group_mp497f3e73368",
+    "title": "Block: MP Landing Hero",
+    "fields": [
+        {
+            "key": "field_mpbe10595b4d0",
+            "label": "Heading",
+            "name": "heading",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 0,
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_mp4b9fa25ccc8",
+            "label": "Content",
+            "name": "content",
+            "aria-label": "",
+            "type": "wysiwyg",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "allow_in_bindings": 0,
+            "tabs": "all",
+            "toolbar": "basic",
+            "media_upload": 0,
+            "delay": 0
+        },
+        {
+            "key": "field_mpfb9b7f721c2",
+            "label": "CTA",
+            "name": "cta",
+            "aria-label": "",
+            "type": "link",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "return_format": "array",
+            "allow_in_bindings": 0
+        },
+        {
+            "key": "field_mpa62f7d9a393",
+            "label": "Background Image",
+            "name": "background_image",
+            "aria-label": "",
+            "type": "image",
+            "instructions": "Landscape photo for tablets and desktops (about 1920×1080).",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
+            "return_format": "id",
+            "library": "all",
+            "min_width": "",
+            "min_height": "",
+            "min_size": "",
+            "max_width": "",
+            "max_height": "",
+            "max_size": "",
+            "mime_types": "",
+            "allow_in_bindings": 0,
+            "preview_size": "medium"
+        },
+        {
+            "key": "field_mpa62f7d9a394",
+            "label": "Background Image (Mobile)",
+            "name": "background_image_mobile",
+            "aria-label": "",
+            "type": "image",
+            "instructions": "Optional portrait crop for phones (below 768px, about 1080×1620). Falls back to the desktop image when empty.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "50",
+                "class": "",
+                "id": ""
+            },
+            "return_format": "id",
+            "library": "all",
+            "min_width": "",
+            "min_height": "",
+            "min_size": "",
+            "max_width": "",
+            "max_height": "",
+            "max_size": "",
+            "mime_types": "",
+            "allow_in_bindings": 0,
+            "preview_size": "medium"
+        },
+        {
+            "key": "field_mp73f183cfbde",
+            "label": "Form Heading",
+            "name": "form_heading",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 0,
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_mp7dee34bcc14",
+            "label": "Form Shortcode",
+            "name": "form_shortcode",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "Gravity Forms shortcode, e.g. [gravityform id=\"7\"]",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "maxlength": "",
+            "allow_in_bindings": 0,
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_mpf692ba31cec",
+            "label": "Form Note",
+            "name": "form_note",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "100% Secure & Confidential",
+            "maxlength": "",
+            "allow_in_bindings": 0,
+            "placeholder": "",
+            "prepend": "",
+            "append": ""
+        }
+    ],
+    "location": [
+        [
+            {
+                "param": "block",
+                "operator": "==",
+                "value": "acf/mp-hero"
+            }
+        ]
+    ],
+    "menu_order": 0,
+    "position": "normal",
+    "style": "default",
+    "label_placement": "top",
+    "instruction_placement": "label",
+    "hide_on_screen": "",
+    "active": true,
+    "description": "",
+    "show_in_rest": 0,
+    "modified": 1790000100
 }

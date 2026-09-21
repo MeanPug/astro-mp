@@ -4,6 +4,9 @@
  * from WordPress at build time and re-encoded as WebP through Astro's image service, with a
  * srcset built from the widths WordPress generated; SVG and GIF are served from WordPress
  * untouched. The image host must be listed in astro.config image.domains.
+ *
+ * With `mobileImage` the output is a <picture>: the mobile file (usually a portrait crop) is
+ * used below `mobileBreakpoint` px, the main image above it; only the matching one downloads.
  */
 import { getImage } from 'astro:assets';
 import { PUBLIC_WP_URL } from 'astro:env/client';
@@ -22,25 +25,36 @@ interface Props {
     loading?: 'lazy' | 'eager';
     fetchpriority?: 'high' | 'low' | 'auto';
     decoding?: 'async' | 'sync' | 'auto';
+    /** Alternative image for narrow viewports (art direction). */
+    mobileImage?: AcfImage | null;
+    /** Viewport width (px) up to which `mobileImage` is used. */
+    mobileBreakpoint?: number;
     [attr: string]: unknown;
 }
 
-const { image, size = 'large', class: className, alt, sizes, loading = 'lazy', fetchpriority, decoding = 'async', ...rest } = Astro.props;
+const { image, size = 'large', class: className, alt, sizes, loading = 'lazy', fetchpriority, decoding = 'async', mobileImage = null, mobileBreakpoint = 767, ...rest } = Astro.props;
 
-const picked = image ? image.sizes?.[size] ?? image.sizes?.full ?? { url: image.url, width: image.width, height: image.height } : null;
-const isVector = !image || image.mime === 'image/svg+xml' || image.mime === 'image/gif';
+interface Rendered {
+    src: string;
+    srcset?: string;
+    width?: number;
+    height?: number;
+}
 
 /** The build fetches media through WP_API_URL, which inside Docker differs from the public URL the API prints. */
 const fetchUrl = (url: string) => url.replace(normalizeOrigin(PUBLIC_WP_URL), normalizeOrigin(WP_API_URL));
 
-let src = picked?.url;
-let srcset = !isVector && image?.srcset ? image.srcset : undefined;
-let width = picked?.width || undefined;
-let height = picked?.height || undefined;
+async function render(img: AcfImage, wanted: Size): Promise<Rendered | null> {
+    const picked = img.sizes?.[wanted] ?? img.sizes?.full ?? { url: img.url, width: img.width, height: img.height };
+    if (!picked) return null;
 
-if (image && picked && !isVector && picked.width && picked.height) {
+    const isVector = img.mime === 'image/svg+xml' || img.mime === 'image/gif';
+    if (isVector || !picked.width || !picked.height) {
+        return { src: picked.url, srcset: !isVector && img.srcset ? img.srcset : undefined, width: picked.width || undefined, height: picked.height || undefined };
+    }
+
     // widths WordPress generated, capped at the requested size so a thumbnail never upsamples
-    const widths = [...new Set([...Object.values(image.sizes ?? {}).map((s) => s.width), image.width])].filter((w) => w > 0 && w <= picked.width).sort((a, b) => a - b);
+    const widths = [...new Set([...Object.values(img.sizes ?? {}).map((s) => s.width), img.width])].filter((w) => w > 0 && w <= picked.width).sort((a, b) => a - b);
 
     const optimized = await getImage({
         src: fetchUrl(picked.url),
@@ -51,25 +65,24 @@ if (image && picked && !isVector && picked.width && picked.height) {
         quality: 82,
     });
 
-    src = optimized.src;
-    srcset = optimized.srcSet.attribute || undefined;
-    width = Number(optimized.attributes.width) || width;
-    height = Number(optimized.attributes.height) || height;
+    return {
+        src: optimized.src,
+        srcset: optimized.srcSet.attribute || undefined,
+        width: Number(optimized.attributes.width) || picked.width,
+        height: Number(optimized.attributes.height) || picked.height,
+    };
 }
+
+const main = image ? await render(image, size) : null;
+const mobile = image && mobileImage ? await render(mobileImage, size) : null;
+const sizesAttr = (r: Rendered | null) => (r?.srcset ? sizes ?? '(min-width: 1200px) 1200px, 100vw' : undefined);
 ---
 
-{image && picked && (
-    <img
-        src={src}
-        srcset={srcset}
-        sizes={srcset ? sizes ?? '(min-width: 1200px) 1200px, 100vw' : undefined}
-        width={width}
-        height={height}
-        alt={alt ?? image.alt ?? ''}
-        class={className}
-        loading={loading}
-        fetchpriority={fetchpriority}
-        decoding={decoding}
-        {...rest}
-    />
-)}
+{image && main && mobile ? (
+    <picture>
+        <source media={`(max-width: ${mobileBreakpoint}px)`} srcset={mobile.srcset ?? mobile.src} sizes={sizesAttr(mobile)} width={mobile.width} height={mobile.height} />
+        <img src={main.src} srcset={main.srcset} sizes={sizesAttr(main)} width={main.width} height={main.height} alt={alt ?? image.alt ?? ''} class={className} loading={loading} fetchpriority={fetchpriority} decoding={decoding} {...rest} />
+    </picture>
+) : image && main ? (
+    <img src={main.src} srcset={main.srcset} sizes={sizesAttr(main)} width={main.width} height={main.height} alt={alt ?? image.alt ?? ''} class={className} loading={loading} fetchpriority={fetchpriority} decoding={decoding} {...rest} />
+) : null}

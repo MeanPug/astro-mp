@@ -7,12 +7,12 @@ import WpImage from '../ui/WpImage.astro';
 import { sectionAttrs, type BlockProps } from './_shared';
 
 const { block, reveal } = Astro.props as BlockProps<'acf/mp-hero'>;
-const { heading, content, cta, background_image: background, form_heading, form_shortcode, form_note } = block.fields;
+const { heading, content, cta, background_image: background, background_image_mobile: backgroundMobile, form_heading, form_shortcode, form_note } = block.fields;
 ---
 
 <section {...sectionAttrs(block, reveal)} class="mp-section mp-hero relative overflow-hidden bg-surface-dark text-white">
     {background ? (
-        <WpImage image={background} size="full" class="absolute inset-0 size-full object-cover" loading="eager" fetchpriority="high" sizes="100vw" />
+        <WpImage image={background} mobileImage={backgroundMobile} size="full" class="absolute inset-0 size-full object-cover" loading="eager" fetchpriority="high" sizes="100vw" />
     ) : (
         <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_#2a3441_0%,_#0b0f14_70%)]"></div>
     )}

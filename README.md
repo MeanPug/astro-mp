@@ -319,9 +319,22 @@ Netlify for unknown paths.
 Bursts are collapsed to one build per 30 seconds. To rebuild by hand without changing content:
 Netlify > Deploys > Trigger deploy, or `curl -X POST -d '{}' <build hook URL>`.
 
-## 11. Fonts
+## 11. Fonts and page speed
 
-The Astro front-end loads Poppins and Montserrat from Google Fonts for now
-(`astro/src/styles/fonts.css`). Before launch self-host them: convert with Google's
-[woff2 compressor](https://github.com/google/woff2) (`woff2_compress <FONT_PATH>`), put the
-files in `astro/public/fonts` and replace the `@import` with `@font-face` rules.
+Poppins and Montserrat are self-hosted: latin `woff2` subsets in `astro/public/fonts`, declared
+with `@font-face` in `astro/src/styles/fonts.css` (Montserrat is one variable file for weights
+400–700, Poppins one file per weight). `Base.astro` preloads the two faces used above the fold.
+To add a weight or a subset, download the file from Google Fonts with a modern browser
+user-agent and add a matching `@font-face` block.
+
+Other speed measures baked into the front-end:
+
+- The stylesheet is inlined into the HTML (`build.inlineStylesheets: 'always'`), so the only
+  render-blocking resource is the document itself.
+- Third-party scripts (GTM, CallRail, ApexChat, Clarity) render as `type="text/plain"` and are
+  released by `astro/src/scripts/delay-scripts.ts` on the first user interaction or 4 seconds
+  after load, like WP Rocket's "delay JavaScript". reCAPTCHA loads on `load`.
+- Raster images become WebP at build time (section 8); the hero image loads eagerly with
+  `fetchpriority="high"`, everything else lazily.
+- Only blocks below the hero take part in the scroll reveal, so the first screen paints
+  without waiting for JavaScript.

@@ -33,6 +33,8 @@ export default defineConfig({
     trailingSlash: 'always',
     build: {
         format: 'directory',
+        // the whole CSS is ~7 KB compressed: inlined, it stops being a render-blocking request
+        inlineStylesheets: 'always',
     },
     env: {
         schema: {

@@ -38,13 +38,16 @@ const currentPath = Astro.url.pathname.endsWith('/') ? Astro.url.pathname : `${A
         <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <meta name="generator" content={Astro.generator} />
+        <link rel="preload" href="/fonts/montserrat-400-700-latin.woff2" as="font" type="font/woff2" crossorigin />
+        <link rel="preload" href="/fonts/poppins-700-latin.woff2" as="font" type="font/woff2" crossorigin />
 
         <Seo seo={seo} fallbackTitle={title} siteName={globals.site.name} indexable={indexable} />
 
         <ApexChat company={globals.options.apexchat_company} />
 
+        {/* third-party scripts are type="text/plain" until scripts/delay-scripts.ts releases them (first interaction or 4s after load) */}
         {gtmId && (
-            <script is:inline define:vars={{ gtmId }}>
+            <script is:inline type="text/plain" data-mp-delay define:vars={{ gtmId }}>
                 (function (w, d, s, l, i) {
                     w[l] = w[l] || [];
                     w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
@@ -59,10 +62,10 @@ const currentPath = Astro.url.pathname.endsWith('/') ? Astro.url.pathname : `${A
         )}
 
         {/* CallRail: swaps the phone number for the tracking number of the visitor's source and reports form fills */}
-        {callrailSrc && <script is:inline async src={callrailSrc}></script>}
+        {callrailSrc && <script is:inline type="text/plain" data-mp-delay async src={callrailSrc}></script>}
 
         {PUBLIC_CLARITY_ID && (
-            <script is:inline define:vars={{ clarityId: PUBLIC_CLARITY_ID }}>
+            <script is:inline type="text/plain" data-mp-delay define:vars={{ clarityId: PUBLIC_CLARITY_ID }}>
                 (function (c, l, a, r, i, t, y) {
                     c[a] =
                         c[a] ||
@@ -101,6 +104,7 @@ const currentPath = Astro.url.pathname.endsWith('/') ? Astro.url.pathname : `${A
         <ConsultModal globals={globals} />
 
         <script>
+            import '../scripts/delay-scripts';
             import '../scripts/site';
             import '../scripts/inviewport';
             import '../scripts/accordion';

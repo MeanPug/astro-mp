@@ -2,7 +2,8 @@
 /**
  * ApexChat live chat: one script serves the chat widget, the video greeting and the
  * "Do you want to chat with a representative?" invitation, all configured in the ApexChat
- * account. Rendered in <head> when Theme Settings > Integrations > ApexChat company is set.
+ * account. Rendered in <head> when Theme Settings > Integrations > ApexChat company is set,
+ * and loaded lazily (see scripts/delay-scripts.ts) so it never competes with the first paint.
  */
 interface Props {
     company?: string | null;
@@ -11,4 +12,5 @@ interface Props {
 const company = Astro.props.company?.trim();
 ---
 
-{company && <script is:inline async src={`https://www.apexchat.net/scripts/invitation.ashx?company=${encodeURIComponent(company)}`}></script>}
+{/* type="text/plain" until scripts/delay-scripts.ts releases it on the first interaction */}
+{company && <script is:inline type="text/plain" data-mp-delay async src={`https://www.apexchat.net/scripts/invitation.ashx?company=${encodeURIComponent(company)}`}></script>}

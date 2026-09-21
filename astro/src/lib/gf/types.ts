@@ -49,6 +49,15 @@ export interface GfConfirmation {
     pagePath: string;
 }
 
+/** reCAPTCHA v3 config from the Gravity Forms reCAPTCHA add-on; null when the form is not protected. */
+export interface GfRecaptcha {
+    type: 'classic' | 'enterprise';
+    siteKey: string;
+    /** Name the token is posted under; the add-on validates it on the server. */
+    inputName: string;
+    action: string;
+}
+
 export interface GfForm {
     id: number;
     title: string;
@@ -61,6 +70,7 @@ export interface GfForm {
     fields: GfField[];
     confirmations: GfConfirmation[];
     submitUrl: string;
+    recaptcha: GfRecaptcha | null;
 }
 
 /** Response of POST /gf/v2/forms/{id}/submissions */

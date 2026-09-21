@@ -1,10 +1,15 @@
 ---
 /**
- * Renders an image object from the astro/v1 API the way wp_get_attachment_image() does:
- * src of the requested size, srcset of all generated sizes, intrinsic dimensions.
- * Media stays hosted by WordPress.
+ * Renders an image object from the astro/v1 API. Raster images (jpeg/png/webp) are pulled
+ * from WordPress at build time and re-encoded as WebP through Astro's image service, with a
+ * srcset built from the widths WordPress generated; SVG and GIF are served from WordPress
+ * untouched. The image host must be listed in astro.config image.domains.
  */
+import { getImage } from 'astro:assets';
+import { PUBLIC_WP_URL } from 'astro:env/client';
+import { WP_API_URL } from 'astro:env/server';
 import type { AcfImage } from '../../lib/wp/acf';
+import { normalizeOrigin } from '../../lib/wp/client';
 
 type Size = keyof AcfImage['sizes'];
 
@@ -23,16 +28,43 @@ interface Props {
 const { image, size = 'large', class: className, alt, sizes, loading = 'lazy', fetchpriority, decoding = 'async', ...rest } = Astro.props;
 
 const picked = image ? image.sizes?.[size] ?? image.sizes?.full ?? { url: image.url, width: image.width, height: image.height } : null;
-const isSvg = image?.mime === 'image/svg+xml';
+const isVector = !image || image.mime === 'image/svg+xml' || image.mime === 'image/gif';
+
+/** The build fetches media through WP_API_URL, which inside Docker differs from the public URL the API prints. */
+const fetchUrl = (url: string) => url.replace(normalizeOrigin(PUBLIC_WP_URL), normalizeOrigin(WP_API_URL));
+
+let src = picked?.url;
+let srcset = !isVector && image?.srcset ? image.srcset : undefined;
+let width = picked?.width || undefined;
+let height = picked?.height || undefined;
+
+if (image && picked && !isVector && picked.width && picked.height) {
+    // widths WordPress generated, capped at the requested size so a thumbnail never upsamples
+    const widths = [...new Set([...Object.values(image.sizes ?? {}).map((s) => s.width), image.width])].filter((w) => w > 0 && w <= picked.width).sort((a, b) => a - b);
+
+    const optimized = await getImage({
+        src: fetchUrl(picked.url),
+        width: picked.width,
+        height: picked.height,
+        widths: widths.length > 1 ? widths : undefined,
+        format: 'webp',
+        quality: 82,
+    });
+
+    src = optimized.src;
+    srcset = optimized.srcSet.attribute || undefined;
+    width = Number(optimized.attributes.width) || width;
+    height = Number(optimized.attributes.height) || height;
+}
 ---
 
 {image && picked && (
     <img
-        src={picked.url}
-        srcset={!isSvg && image.srcset ? image.srcset : undefined}
-        sizes={!isSvg && image.srcset ? sizes ?? '(min-width: 1200px) 1200px, 100vw' : undefined}
-        width={picked.width || undefined}
-        height={picked.height || undefined}
+        src={src}
+        srcset={srcset}
+        sizes={srcset ? sizes ?? '(min-width: 1200px) 1200px, 100vw' : undefined}
+        width={width}
+        height={height}
         alt={alt ?? image.alt ?? ''}
         class={className}
         loading={loading}

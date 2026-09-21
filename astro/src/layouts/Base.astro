@@ -1,11 +1,12 @@
 ---
 /**
- * Document shell: <head> (fonts, global stylesheet, Yoast meta, analytics), header + nav,
+ * Document shell: <head> (fonts, global stylesheet, Yoast meta, analytics, ApexChat), header + nav,
  * page content, footer, consult modal and the site scripts.
  */
 import { PUBLIC_CLARITY_ID, PUBLIC_GTM_ID } from 'astro:env/client';
 import { getGlobals } from '../lib/wp/client';
 import type { WpSeo } from '../lib/wp/types';
+import ApexChat from '../components/site/ApexChat.astro';
 import ConsultModal from '../components/site/ConsultModal.astro';
 import Footer from '../components/site/Footer.astro';
 import Header from '../components/site/Header.astro';
@@ -28,10 +29,15 @@ const currentPath = Astro.url.pathname.endsWith('/') ? Astro.url.pathname : `${A
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="icon" href="/favicon.ico" sizes="16x16 32x32 48x48" />
+        <link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32" />
+        <link rel="icon" href="/icon-192.png" type="image/png" sizes="192x192" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <meta name="generator" content={Astro.generator} />
 
         <Seo seo={seo} fallbackTitle={title} siteName={globals.site.name} />
+
+        <ApexChat company={globals.options.apexchat_company} />
 
         {PUBLIC_GTM_ID && (
             <script is:inline define:vars={{ gtmId: PUBLIC_GTM_ID }}>

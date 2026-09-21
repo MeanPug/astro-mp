@@ -4,6 +4,8 @@
  * names Gravity Forms prints, so styles/components/forms.css applies unchanged. Submission
  * is progressive: scripts/gravity-form.ts posts JSON to gf/v2/forms/{id}/submissions and
  * shows validation errors / the confirmation; without JS the form posts to WordPress.
+ * When the Gravity Forms reCAPTCHA add-on protects the form, the data-recaptcha-* attributes
+ * tell the script to fetch a v3 token on submit (badge bottom-right, no user interaction).
  */
 import { PUBLIC_WP_URL } from 'astro:env/client';
 import { findForm, normalizeOrigin } from '../../lib/wp/client';
@@ -46,6 +48,10 @@ const submitUrl = form ? `${normalizeOrigin(PUBLIC_WP_URL)}/wp-json/gf/v2/forms/
         data-gravity-form={form.id}
         data-confirmation-type={defaultConfirmation?.type ?? 'message'}
         data-confirmation-url={defaultConfirmation?.type === 'page' ? defaultConfirmation.pagePath : defaultConfirmation?.url ?? ''}
+        data-recaptcha-key={form.recaptcha?.siteKey}
+        data-recaptcha-type={form.recaptcha?.type}
+        data-recaptcha-input={form.recaptcha?.inputName}
+        data-recaptcha-action={form.recaptcha?.action}
         novalidate
     >
         <div class="gform_validation_errors" role="alert" tabindex="-1" hidden></div>
@@ -78,7 +84,7 @@ const submitUrl = form ? `${normalizeOrigin(PUBLIC_WP_URL)}/wp-json/gf/v2/forms/
                             return null;
 
                         case 'captcha':
-                            // reCAPTCHA is verified server-side by the Gravity Forms add-on; the widget is not rendered here
+                            // legacy v2 CAPTCHA field: not rendered, v3 protection comes from data-recaptcha-* above
                             return null;
 
                         case 'textarea':

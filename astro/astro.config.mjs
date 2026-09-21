@@ -2,7 +2,22 @@
 import { defineConfig, envField } from 'astro/config';
 
 // https://astro.build/config
+/** Hosts the image service may fetch media from: every WordPress URL the build can see, plus the Docker defaults. */
+/** @type {string[]} */
+const wpImageHosts = [];
+for (const url of [process.env.WP_API_URL, process.env.PUBLIC_WP_URL, 'http://localhost:8000', 'http://wordpress']) {
+    if (!url) continue;
+    try {
+        const host = new URL(url.includes('://') ? url : `https://${url}`).hostname;
+        if (!wpImageHosts.includes(host)) wpImageHosts.push(host);
+    } catch {
+        // not a URL, skip
+    }
+}
+
 export default defineConfig({
+    // WpImage.astro re-encodes WordPress media as WebP at build time
+    image: { domains: wpImageHosts },
     // the public URL of the deployed front-end; canonical/OG tags are rewritten to it
     // SITE_URL wins. On Netlify: production uses the site URL, previews/branches their own origin
     // (DEPLOY_PRIME_URL is the `main--site` alias in production, so it must not win there).

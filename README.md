@@ -191,8 +191,16 @@ live in `conf/form-templates` (import them in Gravity Forms > Import/Export).
 Notes for new forms:
 
 - Supported field types in `GravityForm.astro`: text, email, phone, website, number, date,
-  hidden, textarea, select, radio, checkbox, consent, name, address, html, section. reCAPTCHA
-  fields are not rendered (spam protection runs server-side in Gravity Forms).
+  hidden, textarea, select, radio, checkbox, consent, name, address, html, section. Legacy v2
+  CAPTCHA fields are not rendered; protection comes from reCAPTCHA v3 (below).
+- Spam protection is reCAPTCHA v3 through the Gravity Forms reCAPTCHA add-on. Keys live in
+  Forms > Settings > reCAPTCHA; the front-end reads the site key from the form API, loads the
+  Google script on pages with a protected form, fetches a token on submit and posts it under
+  the input name the add-on validates. Entries get a score (spam below the add-on's threshold)
+  and the theme rejects REST submissions without a token. The badge stays visible bottom-right.
+  Every front-end domain (`localhost`, the Netlify site, the live domain) must be listed for the
+  key in the Google reCAPTCHA admin console, or verification fails. Forms > Settings on a single
+  form can disable reCAPTCHA for that form.
 - Two half-width fields side by side: set the field's CSS class to `gfield--width-half` or a
   layout grid span of 6.
 - The phone field uses the "international" format so any number passes; "standard" enforces
@@ -208,7 +216,10 @@ Theme Settings (ACF options page): `contact_phone` (header phone), `footer_tagli
 (copyright line), `footer_attorney_advertising` (disclaimer), `footer_logo`,
 `footer_background` (photo behind the footer), `global_modal_form` (popup form shortcode).
 Tab **Astro Front-end**: `astro_site_url`, `astro_allowed_origins`, `astro_deploy_hook_url`
-(front-end URL, CORS origins, Netlify build hook; see section 10). Saving Theme Settings
+(front-end URL, CORS origins, Netlify build hook; see section 10). Tab **Integrations**:
+`apexchat_company`, the company slug from the ApexChat embed code; when set, every page loads
+the ApexChat script (live chat widget, video greeting and the "chat with a representative"
+popup are all configured in the ApexChat account, not in the code). Saving Theme Settings
 triggers a rebuild. Menu location `footer-1` holds the footer links. The site logo is the WordPress custom logo
 (Appearance > Customize); without one the site name is shown as text. The front page is
 whatever Settings > Reading sets as the static homepage.
@@ -223,6 +234,10 @@ whatever Settings > Reading sets as the static homepage.
   The dev server reads the route list on start, so after creating a page run
   `docker compose restart astro` (on the static host every publish rebuilds anyway).
 - Images: upload to the media library and pick them in the block fields; SVG is allowed.
+  Raster images (PNG/JPG) are re-encoded as WebP at build time by `WpImage.astro` through
+  Astro's image service, with a srcset from the sizes WordPress generated; SVG and GIF are
+  served from WordPress as is. The WordPress host must be in `image.domains` in
+  `astro.config.mjs` (derived from `WP_API_URL` / `PUBLIC_WP_URL`).
   Media is always served from the WordPress host.
 - Scripting content: never write block markup with `wp_update_post()` from PHP without
   `wp_slash()`, it strips the `\u0022`/`\u003c` escapes inside block JSON and breaks the

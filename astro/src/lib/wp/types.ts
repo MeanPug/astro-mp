@@ -107,4 +107,6 @@ export interface ThemeOptions {
         content?: string;
         form_shortcode?: string;
     };
+    /** Theme Settings > Integrations: ApexChat company slug; empty disables the widget. */
+    apexchat_company?: string;
 }

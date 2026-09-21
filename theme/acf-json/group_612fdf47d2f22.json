@@ -1295,6 +1295,44 @@
             "default_value": "",
             "allow_in_bindings": 0,
             "placeholder": "https://api.netlify.com/build_hooks/..."
+        },
+        {
+            "key": "field_mpint_tab",
+            "label": "Integrations",
+            "name": "",
+            "aria-label": "",
+            "type": "tab",
+            "instructions": "",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "placement": "top",
+            "endpoint": 0,
+            "selected": 0
+        },
+        {
+            "key": "field_mpint_apexchat",
+            "label": "ApexChat company",
+            "name": "apexchat_company",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "Company slug from the ApexChat embed code (the value of the company parameter, e.g. jmlawyerny). Loads the live chat widget, video greeting and chat invitation popup on every page of the Astro site. Leave empty to disable.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "jmlawyerny",
+            "maxlength": "",
+            "prepend": "",
+            "append": ""
         }
     ],
     "location": [
@@ -1318,5 +1356,5 @@
     "display_title": "",
     "allow_ai_access": false,
     "ai_description": "",
-    "modified": 1789200000
+    "modified": 1789991000
 }

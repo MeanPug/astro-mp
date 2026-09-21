@@ -17,11 +17,17 @@
     }
 
     &__contact-label {
-        @apply block font-body text-xs md:text-sm leading-5 text-ink;
+        @apply block font-body text-sm md:text-base lg:text-xl leading-6 lg:leading-7 text-ink;
+    }
+
+    /* "Free Case Evaluation" and the phone share one size, as on the WordPress landing */
+    &__contact-title,
+    &__phone {
+        @apply block font-heading font-bold text-xl md:text-2xl lg:text-[32px] leading-7 md:leading-8 lg:leading-[40px] text-blue whitespace-nowrap;
     }
 
     &__phone {
-        @apply block font-heading font-semibold text-xl md:text-2xl lg:text-[32px] lg:leading-[44px] text-blue whitespace-nowrap hover:text-red transition-colors;
+        @apply hover:text-red transition-colors;
     }
 }
 
@@ -115,6 +121,26 @@
         .mp-accordion__icon::after {
             @apply rotate-0;
         }
+    }
+}
+
+/* ---------- read more (scripts/read-more.ts) ---------- */
+.mp-read-more {
+    &__text {
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 7;
+        overflow: hidden;
+    }
+
+    &__toggle {
+        @apply mt-2 font-body font-semibold text-sm leading-5 text-red underline-offset-2 hover:underline;
+    }
+
+    &.is-expanded &__text {
+        display: block;
+        -webkit-line-clamp: unset;
+        overflow: visible;
     }
 }
 

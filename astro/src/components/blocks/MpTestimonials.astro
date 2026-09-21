@@ -1,7 +1,6 @@
 ---
-/** acf/mp-testimonials — quote-mark header rule and a carousel of review cards. */
+/** acf/mp-testimonials — quote-mark header rule and a carousel of review cards; long reviews are clamped with a Read more toggle (scripts/read-more.ts). */
 import Carousel from '../ui/Carousel.astro';
-import WpImage from '../ui/WpImage.astro';
 import { sectionAttrs, type BlockProps } from './_shared';
 
 const { block, reveal } = Astro.props as BlockProps<'acf/mp-testimonials'>;
@@ -29,18 +28,18 @@ const items = block.fields.items ?? [];
                         <article class="flex h-full flex-col bg-white p-6 shadow-xs">
                             {item.practice_area && <p class="mp-label !text-xs">{item.practice_area}</p>}
                             {item.title && <h3 class="font-heading font-semibold text-lg leading-6 text-ink pt-3">{item.title}</h3>}
-                            {item.content && <p class="font-body text-sm leading-5 text-ink-500 pt-3">{item.content}</p>}
-                            <footer class="mt-auto flex items-center gap-3 pt-6">
-                                {item.author_image ? (
-                                    <WpImage image={item.author_image} size="thumbnail" class="size-9 rounded-full object-cover" sizes="36px" />
-                                ) : (
-                                    <span class="size-9 rounded-full bg-surface" aria-hidden="true"></span>
-                                )}
-                                <div>
-                                    {item.author_name && <p class="font-body font-semibold text-xs leading-4 text-ink">{item.author_name}</p>}
-                                    {item.date && <p class="font-body text-xs leading-4 text-ink-400">{item.date}</p>}
+                            {item.content && (
+                                <div class="mp-read-more pt-3">
+                                    <p class="mp-read-more__text font-body text-sm leading-5 text-ink-500">{item.content}</p>
+                                    <button type="button" class="mp-read-more__toggle" aria-expanded="false" data-more-text="Read more" data-less-text="Read less" hidden>Read more</button>
                                 </div>
-                            </footer>
+                            )}
+                            {/* author image and date are kept in the block fields but not shown */}
+                            {item.author_name && (
+                                <footer class="mt-auto pt-6">
+                                    <p class="font-body font-semibold text-xs leading-4 text-ink">{item.author_name}</p>
+                                </footer>
+                            )}
                         </article>
                     </li>
                 ))}
@@ -48,3 +47,7 @@ const items = block.fields.items ?? [];
         </div>
     )}
 </section>
+
+<script>
+    import '../../scripts/read-more';
+</script>

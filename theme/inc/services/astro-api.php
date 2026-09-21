@@ -549,6 +549,61 @@ function mp_astro_rest_globals()
     ))));
 }
 
+/**
+ * reCAPTCHA v3 details for a form, or null when the Gravity Forms reCAPTCHA add-on is not
+ * active, has no keys, or is disabled in the form's settings. The front-end executes
+ * reCAPTCHA with `action` and posts the token under `inputName`, the name the add-on reads
+ * on validation, so scoring and spam marking happen in Gravity Forms as on a classic page.
+ */
+function mp_astro_form_recaptcha(array $form)
+{
+    if (!function_exists('gf_recaptcha')) {
+        return null;
+    }
+
+    $addon = gf_recaptcha();
+    if ('1' === rgar($addon->get_form_settings($form), 'disable-recaptchav3')) {
+        return null;
+    }
+
+    $type = $addon->get_connection_type() === 'enterprise' ? 'enterprise' : 'classic';
+    $site_key = $addon->get_plugin_settings_instance()->get_recaptcha_key($type === 'enterprise' ? 'site_key_v3_enterprise' : 'site_key_v3');
+    if (!$site_key) {
+        return null;
+    }
+
+    return array(
+        'type' => $type,
+        'siteKey' => $site_key,
+        // the add-on's field class is only loaded on some requests; its name scheme is version-bound
+        'inputName' => class_exists('GF_Field_RECAPTCHA')
+            ? (new GF_Field_RECAPTCHA())->get_input_name((int) $form['id'])
+            : 'input_' . md5('recaptchav3' . $addon->get_version() . (int) $form['id']),
+        'action' => 'submit',
+    );
+}
+
+/**
+ * The add-on skips REST submissions that carry no token, which would let a bot bypass it by
+ * omitting the field. Reject those before Gravity Forms processes them.
+ */
+add_filter('rest_request_before_callbacks', function ($response, $handler, WP_REST_Request $request) {
+    if ($request->get_method() !== 'POST' || !preg_match('#^/gf/v2/forms/(\d+)/submissions$#', $request->get_route(), $m)) {
+        return $response;
+    }
+
+    if (!class_exists('GFAPI') || !($form = GFAPI::get_form((int) $m[1])) || !($recaptcha = mp_astro_form_recaptcha($form))) {
+        return $response;
+    }
+
+    $params = $request->get_json_params() ?: $request->get_body_params();
+    if (empty($params[$recaptcha['inputName']])) {
+        return new WP_Error('mp_astro_recaptcha_missing', __('We could not verify that you are human. Please reload the page and try again, or call us.', 'mp'), array('status' => 400));
+    }
+
+    return $response;
+}, 10, 3);
+
 /** Gravity Form definition trimmed to what a renderer needs. */
 function mp_astro_rest_form(WP_REST_Request $request)
 {
@@ -630,6 +685,7 @@ function mp_astro_rest_form(WP_REST_Request $request)
         'fields' => $fields,
         'confirmations' => $confirmations,
         'submitUrl' => rest_url('gf/v2/forms/' . (int) $form['id'] . '/submissions'),
+        'recaptcha' => mp_astro_form_recaptcha($form),
     )));
 }
 

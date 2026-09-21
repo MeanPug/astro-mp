@@ -1,0 +1,14 @@
+---
+/**
+ * ApexChat live chat: one script serves the chat widget, the video greeting and the
+ * "Do you want to chat with a representative?" invitation, all configured in the ApexChat
+ * account. Rendered in <head> when Theme Settings > Integrations > ApexChat company is set.
+ */
+interface Props {
+    company?: string | null;
+}
+
+const company = Astro.props.company?.trim();
+---
+
+{company && <script is:inline async src={`https://www.apexchat.net/scripts/invitation.ashx?company=${encodeURIComponent(company)}`}></script>}

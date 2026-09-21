@@ -1297,6 +1297,26 @@
             "placeholder": "https://api.netlify.com/build_hooks/..."
         },
         {
+            "key": "field_mpastro_indexable",
+            "label": "Allow search engines",
+            "name": "astro_indexable",
+            "aria-label": "",
+            "type": "true_false",
+            "instructions": "Off (default): every build sends noindex and robots.txt blocks crawlers, so test copies on Netlify never compete with the live site. Turn on only for the production domain; the sitemap is announced in robots.txt when on.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "message": "",
+            "default_value": 0,
+            "ui": 1,
+            "ui_on_text": "Indexable",
+            "ui_off_text": "noindex"
+        },
+        {
             "key": "field_mpint_tab",
             "label": "Integrations",
             "name": "",
@@ -1333,6 +1353,46 @@
             "maxlength": "",
             "prepend": "",
             "append": ""
+        },
+        {
+            "key": "field_mpint_gtm",
+            "label": "Google Tag Manager ID",
+            "name": "gtm_id",
+            "aria-label": "",
+            "type": "text",
+            "instructions": "Container ID, e.g. GTM-XXXXXXX. Loads GTM on every page of the Astro site; pixels and analytics configured inside the container come with it. Leave empty to disable.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "GTM-XXXXXXX",
+            "maxlength": "",
+            "prepend": "",
+            "append": ""
+        },
+        {
+            "key": "field_mpint_callrail",
+            "label": "CallRail script URL",
+            "name": "callrail_script_url",
+            "aria-label": "",
+            "type": "url",
+            "instructions": "The src of the swap.js script from the CallRail install snippet, e.g. https://cdn.callrail.com/companies/<id>/<token>/12/swap.js. Enables dynamic number insertion and form tracking. Leave empty to disable.",
+            "required": 0,
+            "conditional_logic": 0,
+            "wrapper": {
+                "width": "",
+                "class": "",
+                "id": ""
+            },
+            "default_value": "",
+            "placeholder": "https://cdn.callrail.com/companies/.../12/swap.js",
+            "maxlength": "",
+            "prepend": "",
+            "append": ""
         }
     ],
     "location": [
@@ -1356,5 +1416,5 @@
     "display_title": "",
     "allow_ai_access": false,
     "ai_description": "",
-    "modified": 1789991000
+    "modified": 1790000000
 }

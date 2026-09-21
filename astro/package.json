@@ -15,6 +15,7 @@
     "gen:types": "node scripts/gen-block-types.mjs"
   },
   "dependencies": {
+    "@astrojs/sitemap": "^3.7.4",
     "astro": "^7.3.2",
     "micromodal": "^0.4.10"
   },

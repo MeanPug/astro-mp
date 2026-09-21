@@ -109,4 +109,10 @@ export interface ThemeOptions {
     };
     /** Theme Settings > Integrations: ApexChat company slug; empty disables the widget. */
     apexchat_company?: string;
+    /** Theme Settings > Integrations: Google Tag Manager container, e.g. GTM-XXXXXXX. */
+    gtm_id?: string;
+    /** Theme Settings > Integrations: src of CallRail's swap.js (number swapping + form tracking). */
+    callrail_script_url?: string;
+    /** Theme Settings > Astro Front-end: false sends noindex and a blocking robots.txt (test deploys). */
+    astro_indexable?: boolean;
 }

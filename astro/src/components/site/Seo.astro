@@ -9,9 +9,11 @@ interface Props {
     seo: WpSeo | null | undefined;
     fallbackTitle: string;
     siteName: string;
+    /** false overrides Yoast with noindex, nofollow (test deploys); see Theme Settings > Astro Front-end */
+    indexable?: boolean;
 }
 
-const { seo, fallbackTitle, siteName } = Astro.props;
+const { seo, fallbackTitle, siteName, indexable = true } = Astro.props;
 const json = (seo?.json ?? {}) as Record<string, unknown>;
 const site = Astro.site ?? new URL(Astro.url.origin);
 
@@ -29,7 +31,7 @@ const str = (key: string) => (typeof json[key] === 'string' ? decode(json[key] a
 const title = str('title') ?? `${fallbackTitle} | ${siteName}`;
 const description = str('description');
 const robots = json.robots as Record<string, string> | undefined;
-const robotsContent = robots ? Object.values(robots).filter(Boolean).join(', ') : undefined;
+const robotsContent = indexable ? (robots ? Object.values(robots).filter(Boolean).join(', ') : undefined) : 'noindex, nofollow';
 const canonical = absolute(str('canonical')) ?? new URL(Astro.url.pathname, site).toString();
 
 const ogImages = (json.og_image as { url: string; width?: number; height?: number; type?: string }[] | undefined) ?? [];

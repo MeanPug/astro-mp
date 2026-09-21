@@ -1,6 +1,6 @@
 ---
 /**
- * Document shell: <head> (fonts, global stylesheet, Yoast meta, analytics, ApexChat), header + nav,
+ * Document shell: <head> (fonts, global stylesheet, Yoast meta, GTM/CallRail/Clarity, ApexChat), header + nav,
  * page content, footer, consult modal and the site scripts.
  */
 import { PUBLIC_CLARITY_ID, PUBLIC_GTM_ID } from 'astro:env/client';
@@ -21,6 +21,10 @@ interface Props {
 
 const { title, seo = null, bodyClass = '' } = Astro.props;
 const globals = await getGlobals();
+// tracking comes from Theme Settings > Integrations; the env vars stay as a fallback/override for builds
+const gtmId = globals.options.gtm_id?.trim() || PUBLIC_GTM_ID;
+const callrailSrc = globals.options.callrail_script_url?.trim();
+const indexable = Boolean(globals.options.astro_indexable);
 const currentPath = Astro.url.pathname.endsWith('/') ? Astro.url.pathname : `${Astro.url.pathname}/`;
 ---
 
@@ -35,12 +39,12 @@ const currentPath = Astro.url.pathname.endsWith('/') ? Astro.url.pathname : `${A
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         <meta name="generator" content={Astro.generator} />
 
-        <Seo seo={seo} fallbackTitle={title} siteName={globals.site.name} />
+        <Seo seo={seo} fallbackTitle={title} siteName={globals.site.name} indexable={indexable} />
 
         <ApexChat company={globals.options.apexchat_company} />
 
-        {PUBLIC_GTM_ID && (
-            <script is:inline define:vars={{ gtmId: PUBLIC_GTM_ID }}>
+        {gtmId && (
+            <script is:inline define:vars={{ gtmId }}>
                 (function (w, d, s, l, i) {
                     w[l] = w[l] || [];
                     w[l].push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
@@ -53,6 +57,9 @@ const currentPath = Astro.url.pathname.endsWith('/') ? Astro.url.pathname : `${A
                 })(window, document, 'script', 'dataLayer', gtmId);
             </script>
         )}
+
+        {/* CallRail: swaps the phone number for the tracking number of the visitor's source and reports form fills */}
+        {callrailSrc && <script is:inline async src={callrailSrc}></script>}
 
         {PUBLIC_CLARITY_ID && (
             <script is:inline define:vars={{ clarityId: PUBLIC_CLARITY_ID }}>
@@ -73,9 +80,9 @@ const currentPath = Astro.url.pathname.endsWith('/') ? Astro.url.pathname : `${A
     </head>
 
     <body class:list={['overflow-x-clip', bodyClass]}>
-        {PUBLIC_GTM_ID && (
+        {gtmId && (
             <noscript>
-                <iframe src={`https://www.googletagmanager.com/ns.html?id=${PUBLIC_GTM_ID}`} height="0" width="0" style="display:none;visibility:hidden"></iframe>
+                <iframe src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`} height="0" width="0" style="display:none;visibility:hidden"></iframe>
             </noscript>
         )}
 

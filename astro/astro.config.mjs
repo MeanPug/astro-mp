@@ -1,4 +1,5 @@
 // @ts-check
+import sitemap from '@astrojs/sitemap';
 import { defineConfig, envField } from 'astro/config';
 
 // https://astro.build/config
@@ -18,6 +19,8 @@ for (const url of [process.env.WP_API_URL, process.env.PUBLIC_WP_URL, 'http://lo
 export default defineConfig({
     // WpImage.astro re-encodes WordPress media as WebP at build time
     image: { domains: wpImageHosts },
+    // sitemap-index.xml; robots.txt (src/pages/robots.txt.ts) only announces it when indexing is allowed
+    integrations: [sitemap({ filter: (page) => !page.endsWith('/404/') })],
     // the public URL of the deployed front-end; canonical/OG tags are rewritten to it
     // SITE_URL wins. On Netlify: production uses the site URL, previews/branches their own origin
     // (DEPLOY_PRIME_URL is the `main--site` alias in production, so it must not win there).
